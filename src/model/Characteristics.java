@@ -5,6 +5,7 @@ public class Characteristics {
 	private String name;
 	private String typeCharacteristics;
 	private Product product;
+	
 	public Characteristics(String name, String typeCharacteristics, Product product) {
 		if(name != null && !name.isEmpty()){
 		   this.name = name;
@@ -22,6 +23,14 @@ public class Characteristics {
 			//throw CharacteristicsExceptions();
 		}
 		
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getTypeCharacteristics() {
+		return typeCharacteristics;
 	}
 	
 	
