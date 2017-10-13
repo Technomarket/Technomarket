@@ -1,6 +1,7 @@
 package model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -12,11 +13,12 @@ public class Product {
 	private String productNumber;
 	private Credit credit;
 	private Category category;
+	private LocalDate dateToAddet;
 	private ArrayList<Characteristics> characteristics;
 	private int worranty;
 	private int percentPromo;
 	private boolean isNewProduct;
-
+   
 	public Product(String name, String tradeMark, String price, String productNumber, Credit credit, Category category, int worranty,
 			int percentPromo, boolean isNewProduct) {
 
@@ -105,6 +107,41 @@ public class Product {
 	public ArrayList<Characteristics> getCharacteristics() {
 		return (ArrayList<Characteristics>) Collections.unmodifiableList(characteristics);
 	}
+	
+	 public Product() {
+			// TODO Auto-generated constructor stub
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public void setTradeMark(String tradeMark) {
+			this.tradeMark = tradeMark;
+		}
+		public void setPrice(String price) {
+			this.price = new BigDecimal(price);
+		}
+		public void setProductNumber(String productNumber) {
+			this.productNumber = productNumber;
+		}
+		public void setCategory(Category category) {
+			this.category = category;
+		}
+		public void setCharacteristics(ArrayList<Characteristics> characteristics) {
+			this.characteristics = characteristics;
+		}
+		public void setWorranty(int worranty) {
+			this.worranty = worranty;
+		}
+		public void setPercentPromo(int percentPromo) {
+			this.percentPromo = percentPromo;
+		}
+		public void setNewProduct(boolean isNewProduct) {
+			this.isNewProduct = isNewProduct;
+		}
+		
+		public void setDateToAddet(LocalDate dateToAddet) {
+			this.dateToAddet = dateToAddet;
+		}
 
 	
 	

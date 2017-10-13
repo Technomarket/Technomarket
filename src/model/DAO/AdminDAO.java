@@ -29,7 +29,7 @@ public class AdminDAO {
 	}
 	
 	public void insertNewProduct(Product p, User u) throws SQLException{
-		if(u.isAdmin()){
+		if(u.getIsAdmin()){
 			//inserts Product into product table:
 			int tradeMarkId = getTradeMarkId(p.getTradeMark());
 			Connection con = DBManager.getInstance().getConnections();

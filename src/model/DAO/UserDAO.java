@@ -6,11 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.mysql.jdbc.PreparedStatement;
 
 import model.Order;
+import model.Product;
 import model.User;
 import model.DBM.DBManager;
 
@@ -113,7 +115,40 @@ public class UserDAO {
 	}
 	
 	//Добавяне в любими на даден потребител като вкарваме ид и ид на продукта
-	public void addInFAvorite(int userID, int productID){
+	public void addInFavorite(User user, Product product) throws SQLException{
+       String query = "INSER INTO users_has_favourite (user_id, product_id) VALUES (?,?)";
+       this.connection = DBManager.getInstance().getConnections();
+       java.sql.PreparedStatement statment = this.connection.prepareStatement(query);
+       statment.setString(1, ""+user.getUserId());
+       statment.setString(2, ""+product.getProductId());
+	   statment.executeQuery();
+	}
+	//Метод който листва любимите продуцти на потребител
+	public void viewFavourite(User user) throws SQLException{
+		String query =  "SELECT * FROM technomarket.product AS p JOIN technomarket.user_has_favourite AS f ON(p.product_id = f.product_id)WHERE f.user_id ="+user.getUserId();
+		this.connection = DBManager.getInstance().getConnections();
+		java.sql.PreparedStatement statment = this.connection.prepareStatement(query);
+		ResultSet result = statment.executeQuery();
+		Product product = null;
+		ArrayList<Product> products = new  ArrayList<>();
+		while(result.next()){
+			product = new Product();
+			product.setName(result.getString("product_name"));
+			product.setPrice(result.getString("price"));
+			product.setWorranty(result.getInt("warranty"));
+			product.setPercentPromo(result.getInt("percent_promo"));
+			product.setDateToAddet(LocalDate.parse(result.getString("date_added")));
+			product.setProductNumber(result.getString("product_number"));
+			product.setProductId(result.getLong("product_id"));
+			product.setTradeMark(ProductDAO.getInstance().getTradMark(product.getProductId()));
+			products.add(product);
+		}
+		System.out.println("Favourute from User");
+		for (int i = 0; i < products.size(); i++) {
+			System.out.println(products.get(i));
+		}
+		
+		
 		
 	}
 
