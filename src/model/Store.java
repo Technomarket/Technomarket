@@ -2,8 +2,6 @@ package model;
 
 import java.util.HashMap;
 
-import com.sun.jndi.cosnaming.IiopUrl.Address;
-
 public class Store {
 	//Exceptions мисля да е някъв глобален за store и да гърми когато има празни полета
 //	private String city;

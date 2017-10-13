@@ -6,8 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.Iterator;
 
 import model.Category;
+import model.Characteristics;
 import model.Product;
 import model.User;
 import model.DBM.DBManager;
@@ -61,27 +63,12 @@ public class AdminDAO {
 		
 	}
 
-	private void insertProductIntoCharacteristics(Product p) {
-		// TODO Auto-generated method stub
-		
+	private void insertProductIntoCharacteristics(Product p) throws SQLException {
+		CharacterisicsDAO.getInstance().addProductInCharacteristicsTable(p);
 	}
-
+	
 	private void insertProductIntoProductHasCategory(Product p) throws SQLException {
-		long categoryId = getCategoryId(p.getCategory());
-		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement("INSERT INTO technomarket.product_has_category (category_id, product_id) VALUES (?, ?);", Statement.RETURN_GENERATED_KEYS);
-		ps.setLong(1, categoryId);
-		ps.setLong(2, p.getProductId());
-		ps.executeUpdate();
-	}
-
-	private long getCategoryId(Category category) throws SQLException {
-		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement("SELECT category_id FROM technomarket.categories WHERE category_name LIKE '?';");
-		ps.setString(1, category.getName());
-		ResultSet rs = ps.executeQuery();
-		rs.next();
-		return rs.getLong("category_id");
+		CategoryDAO.getInstance().insertProductIntoProductHasCategory(p);
 	}
 
 	private int getTradeMarkId(String tradeMark) throws SQLException {
