@@ -9,7 +9,7 @@ public class Store {
 	//Използвам адрес зашото иначе трябват много методи за валидаци 
 	//и така обединяваме името на града и адрес
 	//за да попълним в базата само викаме гет методите и готово
-	private long idNumber;
+	private long storeId;
 	private Addres addres;
 	private HashMap<Product, Integer> product;
 	private String phoneNumber;
@@ -87,8 +87,11 @@ public class Store {
 		}
 	}
 	
-	public void setIdNumber(long idNumber) {
-		this.idNumber = idNumber;
+	public void setStoreId(long storeId) {
+		this.storeId = storeId;
+	}
+	public long getStoreId() {
+		return storeId;
 	}
 	
 	
