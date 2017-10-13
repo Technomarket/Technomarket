@@ -9,8 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.mysql.jdbc.PreparedStatement;
-
 import model.Order;
 import model.Product;
 import model.User;

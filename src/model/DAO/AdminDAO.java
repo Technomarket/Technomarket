@@ -11,6 +11,7 @@ import java.util.Iterator;
 import model.Category;
 import model.Characteristics;
 import model.Product;
+import model.Store;
 import model.User;
 import model.DBM.DBManager;
 
@@ -80,6 +81,8 @@ public class AdminDAO {
 		return rs.getInt("trade_mark_id");
 	}
 	
-	
+	public void changeQuantityInStore(Store s, Product p, int change) throws SQLException{
+		StoreDAO.getInstance().changeQuantityInStore(s, p, change);
+	}
 
 }
