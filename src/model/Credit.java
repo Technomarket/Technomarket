@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
+import model.exceptions.InvalidCreditDataException;
+
 public class Credit {
 	
 	public enum Bank{UNICREDIT, TBI_BANK};
@@ -25,7 +27,7 @@ public class Credit {
 	
 	public Credit(Bank bank, LocalDate date, Product product, String assurance, int userAge, BigDecimal creditSum, int timeOfCredit,
 			BigDecimal monthPay, BigDecimal allSum, BigDecimal firstPayment, BigDecimal intest, String info,
-			BigDecimal insurancePremium, double yearCostPercentage, double yearInterestRatePercent) {
+			BigDecimal insurancePremium, double yearCostPercentage, double yearInterestRatePercent) throws InvalidCreditDataException {
 		this.bank = bank;
 		
 		this.date = date;
@@ -39,7 +41,7 @@ public class Credit {
 		if(isTimeOfCreditValid(timeOfCredit)){
 			this.timeOfCredit = timeOfCredit;
 		}else{
-			//throw new InvalidCreditDataException();
+			throw new InvalidCreditDataException();
 		}
 		this.monthPay = monthPay;
 		this.allSum = allSum;

@@ -14,6 +14,7 @@ import model.Product;
 import model.Store;
 import model.User;
 import model.DBM.DBManager;
+import model.exceptions.NotAnAdminException;
 
 public class AdminDAO {
 	
@@ -31,7 +32,7 @@ public class AdminDAO {
 		return adminDAO;
 	}
 	
-	public void insertNewProduct(Product p, User u) throws SQLException{
+	public void insertNewProduct(Product p, User u) throws SQLException, NotAnAdminException{
 		if(u.getIsAdmin()){
 			//inserts Product into product table:
 			int tradeMarkId = getTradeMarkId(p.getTradeMark());
@@ -59,7 +60,7 @@ public class AdminDAO {
 			
 			
 		}else{
-			//throws new NotAnAdminException();
+			throw new NotAnAdminException();
 		}
 		
 	}
@@ -81,8 +82,29 @@ public class AdminDAO {
 		return rs.getInt("trade_mark_id");
 	}
 	
-	public void changeQuantityInStore(Store s, Product p, int change) throws SQLException{
-		StoreDAO.getInstance().changeQuantityInStore(s, p, change);
+	public void changeQuantityInStore(Store s, Product p, int change, User u) throws SQLException, NotAnAdminException{
+		if(u.getIsAdmin()){
+			StoreDAO.getInstance().changeQuantityInStore(s, p, change);
+		}else{
+			throw new NotAnAdminException();
+		}
+	}
+	
+	public void insertNewStore(User u, Store s) throws SQLException, NotAnAdminException{
+		if(u.getIsAdmin()){
+			StoreDAO.getInstance().insertNewStore(s);
+		}else{
+			throw new NotAnAdminException();
+		}
 	}
 
+	public void setPromoPercent(User u, Product p, int percent) throws SQLException, NotAnAdminException{
+		if(u.getIsAdmin()){
+			ProductDAO.getInstance().setPromoPercent(p, percent);
+		}else{
+			throw new NotAnAdminException();
+		}
+	}
+	
+	
 }

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 import model.Product;
 import model.Store;
@@ -58,5 +59,20 @@ public class StoreDAO {
 		}else{
 			return "Product is available";
 		}
+	}
+
+	public void insertNewStore(Store s) throws SQLException {
+		Connection con = DBManager.getInstance().getConnections();
+		PreparedStatement ps = con.prepareStatement("INSERT INTO technomarket.stores (city, address, phone, working_time, email, gps) VALUES (?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+		ps.setString(1, s.getAddres().getCity());
+		ps.setString(2, s.getAddres().getAddres());
+		ps.setString(3, s.getPhoneNumber());
+		ps.setString(4, s.getWorkingTime());
+		ps.setString(5, s.getEmail());
+		ps.setString(6, s.getGps());
+		ps.executeUpdate();
+		ResultSet rs = ps.getGeneratedKeys();
+		rs.next();
+		s.setStoreId(rs.getLong(1));
 	}
 }

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import model.exceptions.InvalidOrderDataException;
+
 public class Order {
 	
 	public enum Shiping{HOME_ADDRESS, STORE};
@@ -21,7 +23,7 @@ public class Order {
 	private Shiping shipingType;
 	private boolean isPaid;
 	
-	public Order(HashMap<Product, Integer> products, String address, String userPhoneNumber, String zip, String notes, Shiping shipingType) {
+	public Order(HashMap<Product, Integer> products, String address, String userPhoneNumber, String zip, String notes, Shiping shipingType) throws InvalidOrderDataException {
 		this.products = products;
 		//calculating the sum of all products and their numbers:
 		this.price = calculatePriceOfOrder();
@@ -30,17 +32,17 @@ public class Order {
 		if(isAddressValid(address)){
 			this.address = address;
 		}else{
-			// throw new InvalidOrderDataException();
+			throw new InvalidOrderDataException();
 		}
 		if(isPhoneNumberValid(userPhoneNumber)){
 			this.userPhoneNumber = userPhoneNumber;
 		}else{
-			// throw new InvalidOrderDataException();
+			throw new InvalidOrderDataException();
 		}
 		if(isZipValid(zip)){
 			this.zip = zip;
 		}else{
-			// throw new InvalidOrderDataException();
+			throw new InvalidOrderDataException();
 		}
 		this.notes = notes;
 		this.shipingType = shipingType;

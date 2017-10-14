@@ -3,6 +3,10 @@ package model;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import model.exceptions.InvalidUserDataException;
 
 public class User {
 
@@ -19,26 +23,27 @@ public class User {
 	private HashSet<Product> favourites;
 	private HashMap<Product, Integer> basket;
 	private HashSet<Order> orders;
+	private static final String EMAIL_REGEX = "^(.+)@(.+)$";
 
 	public User() {
 
 	}
 
 	public User(String firstName, String lastName, String email, String password, String gender, LocalDate birthDate,
-			boolean isAdmin, boolean isAbonat, boolean isBanned) {
+			boolean isAdmin, boolean isAbonat, boolean isBanned) throws InvalidUserDataException {
 		if (!correctDateForNameOfUser(firstName, lastName)) {
-			// throw new UserNotCorrectDataExpetions();
+			throw new InvalidUserDataException();
 		} else {
 			this.firstName = firstName;
 			this.lastName = lastName;
 		}
 		if (!correctEmailAdres(email)) {
-			// throw new UserNotCorrectDataExpetions();
+			throw new InvalidUserDataException();
 		} else {
 			this.email = email;
 		}
 		if (!correctPassword(password)) {
-			// throw new UserNotCorrectDataExpetions();
+			throw new InvalidUserDataException();
 		} else {
 			this.password = password;
 		}
@@ -46,7 +51,7 @@ public class User {
 		if (gender != null && !gender.isEmpty()) {
 			this.gender = gender;
 		} else {
-			// throw new UserNotCorrectDataExpetions();
+			throw new InvalidUserDataException();
 		}
 
 		this.birthDate = birthDate;
@@ -69,8 +74,10 @@ public class User {
 	}
 
 	private boolean correctEmailAdres(String email) {
-		// Regex fo email address
-		return false;
+		Pattern pattern = Pattern.compile(EMAIL_REGEX);
+		Matcher matcher = pattern.matcher(email);
+		
+		return matcher.matches();
 	}
 
 	private boolean correctPassword(String password) {

@@ -1,6 +1,10 @@
 package model;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import model.exceptions.InvalidStoreDataException;
 
 public class Store {
 	//Exceptions мисля да е някъв глобален за store и да гърми когато има празни полета
@@ -10,72 +14,77 @@ public class Store {
 	//и така обединяваме името на града и адрес
 	//за да попълним в базата само викаме гет методите и готово
 	private long storeId;
-	private Addres addres;
+	private Address address;
 	private HashMap<Product, Integer> product;
 	private String phoneNumber;
 	private String email;
 	private String workingTime;
 	private String gps;
+	private static final String EMAIL_REGEX = "^(.+)@(.+)$";
+	
 	public Store(String phoneNumber, String email,
-			String workingTime, String gps, Addres addres) {
+			String workingTime, String gps, Address address) throws InvalidStoreDataException {
 		
 //		this.city = city;
 //		this.address = address;
-		if(addres != null){
-			this.addres = addres;
+		if(address != null){
+			this.address = address;
 		}else{
-			//throw ExceptionsForStore();
+			throw new InvalidStoreDataException();
 		}
 		//////////////////////////////
 		if(correctTelNumber(phoneNumber)){
 			this.phoneNumber = phoneNumber;
 		}else{
-			//throw ExceptionsForStore();
+			throw new InvalidStoreDataException();
 		}
 		/////////////////////////////
 		if(correctEmail(email)){
 			this.email = email;
 		}else{
-			//throw ExceptionsForStore();
+			throw new InvalidStoreDataException();
 		}
 		//////////////////////////
 		if(workingTime != null && !workingTime.isEmpty()){
 			this.workingTime = workingTime;
 		}else{
-			//throw ExceptionsForStore();
+			throw new InvalidStoreDataException();
 		}
 		if(gps != null && !gps.isEmpty()){
 			this.gps = gps;
 		}else{
-			//throw ExceptionsForStore();
+			throw new InvalidStoreDataException();
 		}
 		this.product = new HashMap<>();
 	}
-	private boolean correctTelNumber(String telNumber){
-		//regex for telNumber;
-		return false;
-		
+	private boolean correctTelNumber(String phoneNumber){
+		if(phoneNumber.length() != 9 || phoneNumber.charAt(0) != '0'){
+			return false;
+		}else{
+			return true;
+		}
 	}
 	private boolean correctEmail(String email){
-		//regex for email;
-		return false;
+		Pattern pattern = Pattern.compile(EMAIL_REGEX);
+		Matcher matcher = pattern.matcher(email);
 		
-		
+		return matcher.matches();
 	}
-	class Addres{
+	
+	public class Address{
 		private String city;
-		private String addres;
+		private String address;
 		
-		public Addres(String city, String addres) {
+		public Address(String city, String address) throws InvalidStoreDataException {
 			if(city != null && !city.isEmpty()){
 				this.city  = city;
 			}else{
-				//throw Exceptions(); -> Nqkuv
+				throw new InvalidStoreDataException();
 			}
-			if(addres != null && !addres.isEmpty()){
-				this.addres = addres;
+			if(address != null && !address.isEmpty()){
+				this.address = address;
 			}else{
-				//throw Exceptions();
+				throw new InvalidStoreDataException();
 			}
 		}
 		
@@ -83,7 +92,7 @@ public class Store {
 			return city;
 		}
 		public String getAddres() {
-			return addres;
+			return address;
 		}
 	}
 	
@@ -92,6 +101,21 @@ public class Store {
 	}
 	public long getStoreId() {
 		return storeId;
+	}
+	public Address getAddres() {
+		return address;
+	}
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public String getWorkingTime() {
+		return workingTime;
+	}
+	public String getGps() {
+		return gps;
 	}
 	
 	

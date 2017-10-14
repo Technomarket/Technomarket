@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 
 import model.Product;
@@ -36,7 +37,7 @@ public class ProductDAO {
 		pro.setPrice(result.getString("price"));
 		pro.setWorranty(result.getInt("warranty"));
 		pro.setPercentPromo(result.getInt("percent_promo"));
-		pro.setDateToAddet(LocalDate.parse(result.getString("date_added")));
+		pro.setDateAdded(LocalDate.parse(result.getString("date_added")));
 		pro.setProductNumber(result.getString("product_number"));
 		pro.setProductId(result.getLong("product_id"));
 		pro.setTradeMark(getTradMark(pro.getProductId()));
@@ -52,6 +53,14 @@ public class ProductDAO {
 		ResultSet resut = statment.executeQuery();
 		resut.next();
 		return resut.getString("trade_mark_name");
+	}
+
+	public void setPromoPercent(Product p, int percent) throws SQLException {
+		Connection con = DBManager.getInstance().getConnections();
+		PreparedStatement ps = con.prepareStatement("UPDATE technomarket.product SET percent_promo = ? WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
+		ps.setInt(1, percent);
+		ps.setLong(2, p.getProductId());
+		ps.executeUpdate();
 	}
 
 }

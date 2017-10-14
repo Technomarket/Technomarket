@@ -1,5 +1,7 @@
 package model;
 
+import model.exceptions.InvalidCharacteristicsDataException;
+
 public class Characteristics {
 	
 	private long characteristicsId;
@@ -7,21 +9,21 @@ public class Characteristics {
 	private String typeCharacteristics;
 	private Product product;
 	
-	public Characteristics(String name, String typeCharacteristics, Product product) {
+	public Characteristics(String name, String typeCharacteristics, Product product) throws InvalidCharacteristicsDataException {
 		if(name != null && !name.isEmpty()){
 		   this.name = name;
 		}else{
-			//throw new InvalidCharacteristicsDataException();
+			throw new InvalidCharacteristicsDataException();
 		}
 		if(typeCharacteristics != null && !typeCharacteristics.isEmpty()){
 		this.typeCharacteristics = typeCharacteristics;
 		}else{
-			//throw new InvalidCharacteristicsDataException();
+			throw new InvalidCharacteristicsDataException();
 		}
 		if(product != null){
 			this.product = product;
 		}else{
-			//throw new InvalidCharacteristicsDataException();
+			throw new InvalidCharacteristicsDataException();
 		}
 		
 	}

@@ -135,7 +135,7 @@ public class UserDAO {
 			product.setPrice(result.getString("price"));
 			product.setWorranty(result.getInt("warranty"));
 			product.setPercentPromo(result.getInt("percent_promo"));
-			product.setDateToAddet(LocalDate.parse(result.getString("date_added")));
+			product.setDateAdded(LocalDate.parse(result.getString("date_added")));
 			product.setProductNumber(result.getString("product_number"));
 			product.setProductId(result.getLong("product_id"));
 			product.setTradeMark(ProductDAO.getInstance().getTradMark(product.getProductId()));

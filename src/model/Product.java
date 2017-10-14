@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import model.exceptions.InvalidProductDataException;
+
 public class Product {
 	private long productId;
 	private String name;
@@ -13,52 +15,61 @@ public class Product {
 	private String productNumber;
 	private Credit credit;
 	private Category category;
-	private LocalDate dateToAddet;
+	private LocalDate dateAdded;
 	private ArrayList<Characteristics> characteristics;
 	private int worranty;
 	private int percentPromo;
 	private boolean isNewProduct;
    
 	public Product(String name, String tradeMark, String price, String productNumber, Credit credit, Category category, int worranty,
-			int percentPromo, boolean isNewProduct) {
+			int percentPromo, LocalDate dateAdded) throws InvalidProductDataException {
 
 		if (correctName(name)) {
 			this.name = name;
 		} else {
-			// throw productDontCorrectDataExceptions();
+			throw new InvalidProductDataException();
 		}
 		if (correctName(tradeMark)) {
 			this.tradeMark = tradeMark;
 		} else {
-			// throw productDontCorrectDataExceptions();
+			throw new InvalidProductDataException();
 		}
 		BigDecimal big = new BigDecimal(price);
 		if (big.compareTo(new BigDecimal("0")) < 0) {
-			// throw productDontCorrectDataExceptions();
+			throw new InvalidProductDataException();
 		} else {
 			this.price = big;
 		}
 		if (credit != null) {
 			this.credit = credit;
 		}else{
-			// throw productDontCorrectDataExceptions();
+			throw new InvalidProductDataException();
 		}
 		if(characteristics != null){
 			this.characteristics = characteristics;
 		}else{
-			// throw productDontCorrectDataExceptions();
+			throw new InvalidProductDataException();
 		}
 		if(worranty >= 0){
 			this.worranty = worranty;
 		}else{
-			// throw productDontCorrectDataExceptions();
+			throw new InvalidProductDataException();
 		}
 		if(percentPromo >= 0){
 			this.percentPromo = percentPromo;
 		}else{
-			// throw productDontCorrectDataExceptions();
+			throw new InvalidProductDataException();
 		}
-		this.isNewProduct = isNewProduct;
+		this.dateAdded = dateAdded;
+		this.isNewProduct = findIfProductIsNew();
+	}
+
+	private boolean findIfProductIsNew() {
+		if(this.dateAdded.plusDays(15).isAfter(LocalDate.now())){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	private boolean correctName(String name) {
@@ -135,12 +146,9 @@ public class Product {
 		public void setPercentPromo(int percentPromo) {
 			this.percentPromo = percentPromo;
 		}
-		public void setNewProduct(boolean isNewProduct) {
-			this.isNewProduct = isNewProduct;
-		}
 		
-		public void setDateToAddet(LocalDate dateToAddet) {
-			this.dateToAddet = dateToAddet;
+		public void setDateAdded(LocalDate dateAdded) {
+			this.dateAdded = dateAdded;
 		}
 
 	
