@@ -10,11 +10,12 @@ import java.util.Iterator;
 
 import model.Category;
 import model.Characteristics;
+import model.Order;
 import model.Product;
 import model.Store;
 import model.User;
 import model.DBM.DBManager;
-import model.exceptions.AlreadyAnAdminException;
+import model.exceptions.IlligalAdminActionException;
 import model.exceptions.NotAnAdminException;
 
 public class AdminDAO {
@@ -83,33 +84,62 @@ public class AdminDAO {
 		return rs.getInt("trade_mark_id");
 	}
 	
-	public void changeQuantityInStore(Store s, Product p, int change, User u) throws SQLException, NotAnAdminException{
-		if(u.getIsAdmin()){
+	public void changeQuantityInStore(Store s, Product p, int change, User admin) throws SQLException, NotAnAdminException{
+		if(admin.getIsAdmin()){
 			StoreDAO.getInstance().changeQuantityInStore(s, p, change);
 		}else{
 			throw new NotAnAdminException();
 		}
 	}
 	
-	public void insertNewStore(User u, Store s) throws SQLException, NotAnAdminException{
-		if(u.getIsAdmin()){
+	public void insertNewStore(User admin, Store s) throws SQLException, NotAnAdminException{
+		if(admin.getIsAdmin()){
 			StoreDAO.getInstance().insertNewStore(s);
 		}else{
 			throw new NotAnAdminException();
 		}
 	}
 
-	public void setPromoPercent(User u, Product p, int percent) throws SQLException, NotAnAdminException{
-		if(u.getIsAdmin()){
+	//changes the promo percent of product, adds promo sticker in view
+	public void setPromoPercent(User admin, Product p, int percent) throws SQLException, NotAnAdminException{
+		if(admin.getIsAdmin()){
 			ProductDAO.getInstance().setPromoPercent(p, percent);
 		}else{
 			throw new NotAnAdminException();
 		}
 	}
 	
-	public void setUserToAdmin(User u) throws NotAnAdminException, SQLException, AlreadyAnAdminException{
-		if(u.getIsAdmin()){
-			UserDAO.getInstance().setUserToAdmin(u);
+	//makes user admin:
+	public void changeUserIsAdminStatus(User admin, User u, boolean isAdmin) throws NotAnAdminException, SQLException, IlligalAdminActionException{
+		if(admin.getIsAdmin()){
+			UserDAO.getInstance().changeUserIsAdminStatus(u, isAdmin);
+		}else{
+			throw new NotAnAdminException();
+		}
+	}
+	
+	//banns user:
+	public void changeUserIsBannedStatus(User admin, User u, boolean isBanned) throws NotAnAdminException, SQLException, IlligalAdminActionException{
+		if(admin.getIsAdmin()){
+			UserDAO.getInstance().changeUserIsBannedStatus(u, isBanned);
+		}else{
+			throw new NotAnAdminException();
+		}
+	}
+	
+	//set order as confirmed:
+	public void setOrderAsConfirmed(User admin, Order o, boolean isConfirmed) throws NotAnAdminException, SQLException, IlligalAdminActionException{
+		if(admin.getIsAdmin()){
+			OrderDAO.getInstance().setOrderAsConfirmed(o, isConfirmed);
+		}else{
+			throw new NotAnAdminException();
+		}
+	}
+	
+	//set order as paid:
+	public void setOrderAsPaid(User admin, Order o, boolean isPaid) throws NotAnAdminException, SQLException, IlligalAdminActionException{
+		if(admin.getIsAdmin()){
+			OrderDAO.getInstance().setOrderAsPaid(o, isPaid);
 		}else{
 			throw new NotAnAdminException();
 		}

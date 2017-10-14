@@ -100,6 +100,51 @@ public class Order {
 	public void setOrderId(long orderId) {
 		this.orderId = orderId;
 	}
+
+
+
+
+
+
+	public boolean getIsConfirmed() {
+		return isConfirmed;
+	}
+
+
+
+
+
+
+	public void setConfirmed(boolean isConfirmed) {
+		this.isConfirmed = isConfirmed;
+	}
+
+
+
+
+
+
+	public boolean getIsPaid() {
+		return isPaid;
+	}
+
+
+
+
+
+
+	public void setPaid(boolean isPaid) {
+		this.isPaid = isPaid;
+	}
+
+
+
+
+
+
+	public long getOrderId() {
+		return orderId;
+	}
 	
 	
 	
