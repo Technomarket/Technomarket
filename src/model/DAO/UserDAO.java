@@ -2,6 +2,7 @@ package model.DAO;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,6 +14,7 @@ import model.Order;
 import model.Product;
 import model.User;
 import model.DBM.DBManager;
+import model.exceptions.AlreadyAnAdminException;
 
 public class UserDAO {
 	private static UserDAO userDAO;
@@ -145,9 +147,17 @@ public class UserDAO {
 		for (int i = 0; i < products.size(); i++) {
 			System.out.println(products.get(i));
 		}
-		
-		
-		
+	}
+	
+	public void setUserToAdmin(User u) throws SQLException, AlreadyAnAdminException {
+		if(u.getIsAdmin()){
+			throw new AlreadyAnAdminException();
+		}
+		Connection con = DBManager.getInstance().getConnections();
+		PreparedStatement ps = con.prepareStatement("UPDATE technomarket.users SET isAdmin = ? WHERE user_id = ?", Statement.RETURN_GENERATED_KEYS);
+		ps.setBoolean(1, true);
+		ps.setLong(2, u.getUserId());
+		ps.executeUpdate();
 	}
 
 }

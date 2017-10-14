@@ -14,6 +14,7 @@ import model.Product;
 import model.Store;
 import model.User;
 import model.DBM.DBManager;
+import model.exceptions.AlreadyAnAdminException;
 import model.exceptions.NotAnAdminException;
 
 public class AdminDAO {
@@ -101,6 +102,14 @@ public class AdminDAO {
 	public void setPromoPercent(User u, Product p, int percent) throws SQLException, NotAnAdminException{
 		if(u.getIsAdmin()){
 			ProductDAO.getInstance().setPromoPercent(p, percent);
+		}else{
+			throw new NotAnAdminException();
+		}
+	}
+	
+	public void setUserToAdmin(User u) throws NotAnAdminException, SQLException, AlreadyAnAdminException{
+		if(u.getIsAdmin()){
+			UserDAO.getInstance().setUserToAdmin(u);
 		}else{
 			throw new NotAnAdminException();
 		}
