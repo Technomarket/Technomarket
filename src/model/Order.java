@@ -25,7 +25,7 @@ public class Order {
 	private String payment;
 	private boolean isPaid;
 	
-	public Order(HashMap<Product, Integer> products, String address, String userPhoneNumber, String zip, String notes, Shiping shipingType, String payment) throws InvalidOrderDataException {
+	public Order(HashMap<Product, Integer> products, String address, String userPhoneNumber, String zip, String notes, Shiping shipingType, String payment, LocalDateTime time, boolean isConfirmed, boolean isPaid) throws InvalidOrderDataException {
 		this.products = products;
 		//calculating the sum of all products and their numbers:
 		this.price = calculatePriceOfOrder();
@@ -63,10 +63,10 @@ public class Order {
 		}
 		
 		//setting the date and time of creating a new order to .now():
-		this.time = LocalDateTime.now();
+		this.time = time;
 		//setting boolean of status to false at the start:
-		this.isConfirmed = false;
-		this.isPaid = false;
+		this.isConfirmed = isConfirmed;
+		this.isPaid = isPaid;
 	}
 
 	public Order(){
