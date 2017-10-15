@@ -1,8 +1,12 @@
 package model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +28,7 @@ public class User {
 	private HashMap<Product, Integer> basket;
 	private HashSet<Order> orders;
 	private static final String EMAIL_REGEX = "^(.+)@(.+)$";
+	private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=\\S+$).{8,}$";
 
 	public User() {
 
@@ -80,9 +85,20 @@ public class User {
 	}
 
 	private boolean correctPassword(String password) {
-		// Regex for correct password
-		// if is mach retur true;
-		return false;
+		Pattern pattern = Pattern.compile(PASSWORD_REGEX);
+		Matcher matcher = pattern.matcher(password);
+		
+		return matcher.matches();
+	}
+	
+	public BigDecimal getBasketPrice(){
+		BigDecimal sum = new BigDecimal(0);
+		for (Iterator<Entry<Product, Integer>> iterator = basket.entrySet().iterator(); iterator.hasNext();) {
+			Entry<Product, Integer> product = iterator.next();
+			sum.add(product.getKey().getPrice().multiply(new BigDecimal(product.getValue())));
+		}
+		
+		return sum;
 	}
 
 	public void setId(long id) {
@@ -169,4 +185,12 @@ public class User {
 		return userId;
 	}
 
+	//returns all orders by specfic user to be listed in his account when clocking on "Orders" button:
+	
+	public HashSet<Order> getOrders() {
+		return (HashSet<Order>) Collections.unmodifiableSet(orders);
+	}
+
+	
+	
 }

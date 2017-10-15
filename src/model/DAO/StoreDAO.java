@@ -32,10 +32,10 @@ public class StoreDAO {
 	
 	public void changeQuantityInStore(Store s, Product p, int change) throws SQLException{
 		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement("INSERT INTO technomarket.store_has_product (store_id, product_id, amount) VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-		ps.setLong(1, s.getStoreId());
-		ps.setLong(2, p.getProductId());
-		ps.setInt(2, change);
+		PreparedStatement ps = con.prepareStatement("UPDATE technomarket.store_has_product SET amount=? WHERE store_id = ? AND product_id = ?;", Statement.RETURN_GENERATED_KEYS);
+		ps.setInt(1, change);
+		ps.setLong(2, s.getStoreId());
+		ps.setLong(3, p.getProductId());
 		ps.executeUpdate();
 	}
 
@@ -59,6 +59,15 @@ public class StoreDAO {
 		}else{
 			return "Product is available";
 		}
+	}
+	
+	public void insertProductInStore(Store s, Product p, int amount) throws SQLException{
+		Connection con = DBManager.getInstance().getConnections();
+		PreparedStatement ps = con.prepareStatement("INSERT INTO technomarket.store_has_product (store_id, product_id, amount) VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+		ps.setLong(1, s.getStoreId());
+		ps.setLong(2, p.getProductId());
+		ps.setInt(3, amount);
+		ps.executeUpdate();
 	}
 
 	public void insertNewStore(Store s) throws SQLException {

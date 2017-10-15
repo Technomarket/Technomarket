@@ -62,5 +62,34 @@ public class ProductDAO {
 		ps.setLong(2, p.getProductId());
 		ps.executeUpdate();
 	}
+	
+	//remove product modul:
+	
+	public void removeProduct(Product p) throws SQLException{
+		Connection con = DBManager.getInstance().getConnections();
+		PreparedStatement ps1 = con.prepareStatement("DELETE FROM technomarket.product WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
+		ps1.setLong(1, p.getProductId());
+		ps1.executeUpdate();
+		
+		PreparedStatement ps2 = con.prepareStatement("DELETE FROM technomarket.order_has_product WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
+		ps2.setLong(1, p.getProductId());
+		ps2.executeUpdate();
+		
+		PreparedStatement ps3 = con.prepareStatement("DELETE FROM technomarket.product_has_category WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
+		ps3.setLong(1, p.getProductId());
+		ps3.executeUpdate();
+		
+		PreparedStatement ps4 = con.prepareStatement("DELETE FROM technomarket.store_has_product WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
+		ps4.setLong(1, p.getProductId());
+		ps4.executeUpdate();
+		
+		PreparedStatement ps5 = con.prepareStatement("DELETE FROM technomarket.user_has_favourite WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
+		ps5.setLong(1, p.getProductId());
+		ps5.executeUpdate();
+		
+		PreparedStatement ps6 = con.prepareStatement("DELETE FROM technomarket.characteristics WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
+		ps6.setLong(1, p.getProductId());
+		ps6.executeUpdate();
+	}
 
 }

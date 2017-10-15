@@ -97,8 +97,8 @@ public class UserDAO {
 		user.setAbonat(result.getBoolean("isAbonat"));
 		user.setBanned(result.getBoolean("isBanned"));
 		HashSet<Order> orders = OrderDAO.getInstance().getOrdersForUser(result.getLong("id"));
+		user.setOrders(orders);
 		return user;
-
 	}
 
 	// В сличай на забравена парола се проверава дали има такъв емайл ако има се
@@ -114,17 +114,31 @@ public class UserDAO {
 		return false;
 	}
 
-	// Добавяне в любими на даден потребител като вкарваме ид и ид на продукта
+	
+	//favourite products:
+	
+	// Adding favourite product to user account:
 	public void addInFavorite(User user, Product product) throws SQLException {
-		String query = "INSER INTO users_has_favourite (user_id, product_id) VALUES (?,?)";
+		String query = "INSER INTO technomarket.users_has_favourite (user_id, product_id) VALUES (?, ?)";
 		this.connection = DBManager.getInstance().getConnections();
 		java.sql.PreparedStatement statment = this.connection.prepareStatement(query);
-		statment.setString(1, "" + user.getUserId());
-		statment.setString(2, "" + product.getProductId());
+		statment.setLong(1, user.getUserId());
+		statment.setLong(2,product.getProductId());
 		statment.executeQuery();
 	}
+	
+	//Remove favourite product:
+	public void removeFavouriteProduct(User u, Product p) throws SQLException{
+		String query = "DELETE FROM technomarket.user_has_favouite WHERE user_id = ? AND product_id = ?";
+		this.connection = DBManager.getInstance().getConnections();
+		java.sql.PreparedStatement statment = this.connection.prepareStatement(query);
+		statment.setLong(1, u.getUserId());
+		statment.setLong(2, p.getProductId());
+		statment.executeQuery();
+	}
+	
 
-	// Метод който листва любимите продуцти на потребител
+	// Listing all favourite products:
 	public void viewFavourite(User user) throws SQLException {
 		String query = "SELECT * FROM technomarket.product AS p JOIN technomarket.user_has_favourite AS f ON(p.product_id = f.product_id)WHERE f.user_id ="
 				+ user.getUserId();
@@ -151,6 +165,8 @@ public class UserDAO {
 		}
 	}
 
+	//user statuses:
+	
 	public void changeUserIsAdminStatus(User u, boolean isAdmin) throws SQLException, IlligalAdminActionException {
 		if (u.getIsAdmin() && isAdmin) {
 			throw new IlligalAdminActionException();

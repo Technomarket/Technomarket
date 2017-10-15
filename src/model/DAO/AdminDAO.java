@@ -34,8 +34,8 @@ public class AdminDAO {
 		return adminDAO;
 	}
 	
-	public void insertNewProduct(Product p, User u) throws SQLException, NotAnAdminException{
-		if(u.getIsAdmin()){
+	public void insertNewProduct(Product p, User admin) throws SQLException, NotAnAdminException{
+		if(admin.getIsAdmin()){
 			//inserts Product into product table:
 			int tradeMarkId = getTradeMarkId(p.getTradeMark());
 			Connection con = DBManager.getInstance().getConnections();
@@ -82,6 +82,14 @@ public class AdminDAO {
 		ResultSet rs = ps.executeQuery();
 		rs.next();
 		return rs.getInt("trade_mark_id");
+	}
+	
+	public void removeProduct(Product p, User admin) throws NotAnAdminException, SQLException{
+		if(admin.getIsAdmin()){
+			ProductDAO.getInstance().removeProduct(p);
+		}else{
+			throw new NotAnAdminException();
+		}
 	}
 	
 	public void changeQuantityInStore(Store s, Product p, int change, User admin) throws SQLException, NotAnAdminException{

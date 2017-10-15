@@ -151,6 +151,85 @@ public class Product {
 			this.dateAdded = dateAdded;
 		}
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((category == null) ? 0 : category.hashCode());
+			result = prime * result + ((characteristics == null) ? 0 : characteristics.hashCode());
+			result = prime * result + ((credit == null) ? 0 : credit.hashCode());
+			result = prime * result + ((dateAdded == null) ? 0 : dateAdded.hashCode());
+			result = prime * result + (isNewProduct ? 1231 : 1237);
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + percentPromo;
+			result = prime * result + ((price == null) ? 0 : price.hashCode());
+			result = prime * result + (int) (productId ^ (productId >>> 32));
+			result = prime * result + ((productNumber == null) ? 0 : productNumber.hashCode());
+			result = prime * result + ((tradeMark == null) ? 0 : tradeMark.hashCode());
+			result = prime * result + worranty;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Product other = (Product) obj;
+			if (category == null) {
+				if (other.category != null)
+					return false;
+			} else if (!category.equals(other.category))
+				return false;
+			if (characteristics == null) {
+				if (other.characteristics != null)
+					return false;
+			} else if (!characteristics.equals(other.characteristics))
+				return false;
+			if (credit == null) {
+				if (other.credit != null)
+					return false;
+			} else if (!credit.equals(other.credit))
+				return false;
+			if (dateAdded == null) {
+				if (other.dateAdded != null)
+					return false;
+			} else if (!dateAdded.equals(other.dateAdded))
+				return false;
+			if (isNewProduct != other.isNewProduct)
+				return false;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			if (percentPromo != other.percentPromo)
+				return false;
+			if (price == null) {
+				if (other.price != null)
+					return false;
+			} else if (!price.equals(other.price))
+				return false;
+			if (productId != other.productId)
+				return false;
+			if (productNumber == null) {
+				if (other.productNumber != null)
+					return false;
+			} else if (!productNumber.equals(other.productNumber))
+				return false;
+			if (tradeMark == null) {
+				if (other.tradeMark != null)
+					return false;
+			} else if (!tradeMark.equals(other.tradeMark))
+				return false;
+			if (worranty != other.worranty)
+				return false;
+			return true;
+		}
+
 	
 	
 }

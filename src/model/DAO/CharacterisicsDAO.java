@@ -33,9 +33,10 @@ public class CharacterisicsDAO {
 			Characteristics characteristic = iterator.next();
 			long typeId = getCharacteristicsTypeId(characteristic);
 			Connection con = DBManager.getInstance().getConnections();
-			PreparedStatement ps = con.prepareStatement("INSERT INTO technomarket.characteristics (characteristics_name, characteristics_type_id) VALUES (?, ?);", Statement.RETURN_GENERATED_KEYS);
-			ps.setString(1, characteristic.getName());
-			ps.setLong(2, typeId);
+			PreparedStatement ps = con.prepareStatement("INSERT INTO technomarket.characteristics (product_id, characteristics_name, characteristics_type_id) VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+			ps.setLong(1, p.getProductId());
+			ps.setString(2, characteristic.getName());
+			ps.setLong(3, typeId);
 			ps.executeUpdate();
 			ResultSet rs = ps.getGeneratedKeys();
 			rs.next();
