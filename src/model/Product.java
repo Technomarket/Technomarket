@@ -150,6 +150,10 @@ public class Product {
 		public void setDateAdded(LocalDate dateAdded) {
 			this.dateAdded = dateAdded;
 		}
+		
+		
+		
+		
 
 		@Override
 		public int hashCode() {

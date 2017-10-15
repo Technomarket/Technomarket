@@ -5,11 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import model.Characteristics;
+import model.Order;
 import model.Product;
 import model.DBM.DBManager;
+import model.exceptions.InvalidCharacteristicsDataException;
 
 public class CharacterisicsDAO {
 
@@ -53,5 +57,18 @@ public class CharacterisicsDAO {
 		return rs.getLong("characteristics_type_id");	
 	}
 	
+	
+	public ArrayList<Characteristics> getProducsCharacteristics(long long1) throws SQLException, InvalidCharacteristicsDataException {
+		ArrayList<Characteristics> characteristics = new ArrayList<>();
+		Connection con = DBManager.getInstance().getConnections();
+		PreparedStatement ps = con.prepareStatement("SELECT * FROM technomarket.characteristics AS c JOIN technomarket.characteristics_type AS t ON(c.characteristics_type_id = t.characteristics_type_id) WHERE c.product_id = ?;");
+		ps.setLong(1, long1);
+		ResultSet result = ps.executeQuery();
+		while (result.next()) {
+			Characteristics characteristic = new Characteristics(result.getString("characteristics_name"), result.getString("characteristics_type_name"));
+			characteristics.add(characteristic);
+		}
+		return characteristics;
+	}
 	
 }

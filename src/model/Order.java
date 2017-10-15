@@ -69,7 +69,9 @@ public class Order {
 		this.isPaid = false;
 	}
 
-	
+	public Order(){
+		
+	}
 
 	
 	
@@ -237,6 +239,47 @@ public class Order {
 
 
 
+
+	public void setProducts(HashMap<Product, Integer> products) {
+		this.products = products;
+	}
+
+
+
+
+
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public void setTime(LocalDateTime time) {
+		this.time = time;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public void setUserPhoneNumber(String userPhoneNumber) {
+		this.userPhoneNumber = userPhoneNumber;
+	}
+
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public void setShipingType(Shiping shipingType) {
+		this.shipingType = shipingType;
+	}
+
+	public void setPayment(String payment) {
+		this.payment = payment;
+	}
 
 	@Override
 	public int hashCode() {

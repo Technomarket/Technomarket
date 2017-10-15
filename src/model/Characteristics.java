@@ -7,9 +7,8 @@ public class Characteristics {
 	private long characteristicsId;
 	private String name;
 	private String typeCharacteristics;
-	private Product product;
 	
-	public Characteristics(String name, String typeCharacteristics, Product product) throws InvalidCharacteristicsDataException {
+	public Characteristics(String name, String typeCharacteristics) throws InvalidCharacteristicsDataException {
 		if(name != null && !name.isEmpty()){
 		   this.name = name;
 		}else{
@@ -17,11 +16,6 @@ public class Characteristics {
 		}
 		if(typeCharacteristics != null && !typeCharacteristics.isEmpty()){
 		this.typeCharacteristics = typeCharacteristics;
-		}else{
-			throw new InvalidCharacteristicsDataException();
-		}
-		if(product != null){
-			this.product = product;
 		}else{
 			throw new InvalidCharacteristicsDataException();
 		}
@@ -42,6 +36,14 @@ public class Characteristics {
 
 	public void setCharacteristicsId(long characteristicsId) {
 		this.characteristicsId = characteristicsId;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setTypeCharacteristics(String typeCharacteristics) {
+		this.typeCharacteristics = typeCharacteristics;
 	}
 	
 	

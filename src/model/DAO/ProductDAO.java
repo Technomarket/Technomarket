@@ -6,9 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
+import model.Characteristics;
 import model.Product;
 import model.DBM.DBManager;
+import model.exceptions.InvalidCharacteristicsDataException;
 
 public class ProductDAO {
 	private static ProductDAO productDAO;
@@ -26,10 +29,11 @@ public class ProductDAO {
 	}
 
 	// Метод който връща даден продукт от базата
-	public Product getProduct(int productID) throws SQLException {
-		String query = "SELECT * FROM technomarket.product WHERE product_id =" + productID;
+	public Product getProduct(long productID) throws SQLException, InvalidCharacteristicsDataException {
+		String query = "SELECT * FROM technomarket.product WHERE product_id = ?;";
 		this.connection = DBManager.getInstance().getConnections();
 		PreparedStatement statment = this.connection.prepareStatement(query);
+		statment.setLong(1, productID);
 		ResultSet result = statment.executeQuery();
 		Product pro = new Product();
 		result.next();
@@ -41,15 +45,16 @@ public class ProductDAO {
 		pro.setProductNumber(result.getString("product_number"));
 		pro.setProductId(result.getLong("product_id"));
 		pro.setTradeMark(getTradMark(pro.getProductId()));
-
+		ArrayList<Characteristics> characteristics = CharacterisicsDAO.getInstance().getProducsCharacteristics(pro.getProductId());
+		pro.setCharacteristics(characteristics);
 		return pro;
 	}
 
 	public String getTradMark(long id) throws SQLException {
-		String query = "SELECT trade_mark_name FROM technomarket.trade_marks AS t JOIN technomarket.product AS p ON(t.trade_mark_id = p.trade_mark_id)WHERE product_id ="
-				+ id;
+		String query = "SELECT trade_mark_name FROM technomarket.trade_marks AS t JOIN technomarket.product AS p ON(t.trade_mark_id = p.trade_mark_id)WHERE product_id = ?";
 		this.connection = DBManager.getInstance().getConnections();
 		PreparedStatement statment = this.connection.prepareStatement(query);
+		statment.setLong(1, id);
 		ResultSet resut = statment.executeQuery();
 		resut.next();
 		return resut.getString("trade_mark_name");

@@ -15,6 +15,7 @@ import model.Product;
 import model.User;
 import model.DBM.DBManager;
 import model.exceptions.IlligalAdminActionException;
+import model.exceptions.InvalidCharacteristicsDataException;
 
 public class UserDAO {
 	private static UserDAO userDAO;
@@ -80,7 +81,7 @@ public class UserDAO {
 
 	// Метода exitsUser проверява и ако каже че има се връща потребителя от този
 	// метод!
-	public User getUser(String userName) throws SQLException {
+	public User getUser(String userName) throws SQLException, InvalidCharacteristicsDataException {
 		String getQuery = "SELECT * FROM technomarket.users WHERE email =" + userName;
 		User user = new User();
 		java.sql.PreparedStatement statment = this.connection.prepareStatement(getQuery);
