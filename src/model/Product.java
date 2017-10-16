@@ -20,6 +20,7 @@ public class Product {
 	private int worranty;
 	private int percentPromo;
 	private boolean isNewProduct;
+	public enum campareEnum{ defaultt,price,markName };
    
 	public Product(String name, String tradeMark, String price, String productNumber, Credit credit, Category category, int worranty,
 			int percentPromo, LocalDate dateAdded) throws InvalidProductDataException {
