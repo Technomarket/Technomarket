@@ -6,11 +6,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import model.exceptions.InvalidUserDataException;
+import util.RegexValidator;
 
 public class User {
 
@@ -24,11 +27,9 @@ public class User {
 	private boolean isAdmin;
 	private boolean isAbonat;
 	private boolean isBanned;
-	private HashSet<Product> favourites;
-	private HashMap<Product, Integer> basket;
-	private HashSet<Order> orders;
-	private static final String EMAIL_REGEX = "^(.+)@(.+)$";
-	private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=\\S+$).{8,}$";
+	private LinkedHashSet<Product> favourites;
+	private LinkedHashMap<Product, Integer> basket;
+	private LinkedHashSet<Order> orders;
 
 	public User() {
 
@@ -41,12 +42,12 @@ public class User {
 			this.firstName = firstName;
 			this.lastName = lastName;
 		}
-		if (!correctEmailAdres(email)) {
+		if (!RegexValidator.validateEmail(email)) {
 			throw new InvalidUserDataException();
 		} else {
 			this.email = email;
 		}
-		if (!correctPassword(password)) {
+		if (!RegexValidator.validatePassword(password)) {
 			throw new InvalidUserDataException();
 		} else {
 			this.password = password;
@@ -62,9 +63,9 @@ public class User {
 		this.isAdmin = false;
 		this.isAbonat = isAbonat;
 		this.isBanned = false;
-		this.favourites = new HashSet<>();
-		this.basket = new HashMap<>();
-		this.orders = new HashSet<>();
+		this.favourites = new LinkedHashSet<>();
+		this.basket = new LinkedHashMap<>();
+		this.orders = new LinkedHashSet<>();
 	}
 
 	private boolean correctDateForNameOfUser(String firstName, String lastName) {
@@ -75,20 +76,6 @@ public class User {
 			return false;
 		}
 		return true;
-	}
-
-	private boolean correctEmailAdres(String email) {
-		Pattern pattern = Pattern.compile(EMAIL_REGEX);
-		Matcher matcher = pattern.matcher(email);
-		
-		return matcher.matches();
-	}
-
-	private boolean correctPassword(String password) {
-		Pattern pattern = Pattern.compile(PASSWORD_REGEX);
-		Matcher matcher = pattern.matcher(password);
-		
-		return matcher.matches();
 	}
 	
 	public BigDecimal getBasketPrice(){
@@ -106,7 +93,7 @@ public class User {
 
 	}
 	
-	public void setOrders(HashSet<Order> orders) {
+	public void setOrders(LinkedHashSet<Order> orders) {
 		this.orders = orders;
 	}
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import model.exceptions.InvalidProductDataException;
+import util.RegexValidator;
 
 public class Product {
 	private long productId;
@@ -20,10 +21,11 @@ public class Product {
 	private int worranty;
 	private int percentPromo;
 	private boolean isNewProduct;
+	private String imageUrl;
 	public enum campareEnum{ defaultt,price,markName };
-   
+	
 	public Product(String name, String tradeMark, String price, String productNumber, Credit credit, Category category, int worranty,
-			int percentPromo, LocalDate dateAdded) throws InvalidProductDataException {
+			int percentPromo, LocalDate dateAdded, String imageUrl) throws InvalidProductDataException {
 
 		if (correctName(name)) {
 			this.name = name;
@@ -61,6 +63,12 @@ public class Product {
 		}else{
 			throw new InvalidProductDataException();
 		}
+		if(RegexValidator.validateImageFile(imageUrl)){
+			this.imageUrl = imageUrl;
+		}else{
+			throw new InvalidProductDataException();
+		}
+		
 		this.dateAdded = dateAdded;
 		this.isNewProduct = findIfProductIsNew();
 	}
@@ -155,6 +163,18 @@ public class Product {
 		
 		
 		
+
+		public String getImageUrl() {
+			return imageUrl;
+		}
+
+		public void setImageUrl(String imageUrl) {
+			this.imageUrl = imageUrl;
+		}
+
+		public boolean getIsNewProduct() {
+			return isNewProduct;
+		}
 
 		@Override
 		public int hashCode() {

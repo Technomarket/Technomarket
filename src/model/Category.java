@@ -7,7 +7,16 @@ public class Category {
 	private Category category;
 	private String name;
 	
-	public void setCategory(String name, Category category) throws InvalidCategoryDataException {
+	
+	public Category(String name) throws InvalidCategoryDataException{
+		if(name != null && !name.isEmpty()){
+			this.name = name;
+		}else{
+			throw new InvalidCategoryDataException();
+		}
+	}
+	
+	public Category(String name, Category category) throws InvalidCategoryDataException {
 		if(category != null){
 		   this.category = category;
 		}else{

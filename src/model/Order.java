@@ -5,15 +5,17 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import model.exceptions.InvalidOrderDataException;
+import util.RegexValidator;
 
 public class Order {
 	
 	public enum Shiping{HOME_ADDRESS, STORE};
 	private long orderId;
-	private HashMap<Product, Integer> products;
+	private LinkedHashMap<Product, Integer> products;
 	private BigDecimal price;
 	private LocalDateTime time;
 	private String address;
@@ -25,7 +27,7 @@ public class Order {
 	private String payment;
 	private boolean isPaid;
 	
-	public Order(HashMap<Product, Integer> products, String address, String userPhoneNumber, String zip, String notes, Shiping shipingType, String payment, LocalDateTime time, boolean isConfirmed, boolean isPaid) throws InvalidOrderDataException {
+	public Order(LinkedHashMap<Product, Integer> products, String address, String userPhoneNumber, String zip, String notes, Shiping shipingType, String payment, LocalDateTime time, boolean isConfirmed, boolean isPaid) throws InvalidOrderDataException {
 		this.products = products;
 		//calculating the sum of all products and their numbers:
 		this.price = calculatePriceOfOrder();
@@ -36,7 +38,7 @@ public class Order {
 		}else{
 			throw new InvalidOrderDataException();
 		}
-		if(isPhoneNumberValid(userPhoneNumber)){
+		if(RegexValidator.validateMobilePhoneNumber(userPhoneNumber)){
 			this.userPhoneNumber = userPhoneNumber;
 		}else{
 			throw new InvalidOrderDataException();
@@ -94,17 +96,6 @@ public class Order {
 			return true;
 		}
 	}
-
-
-
-	private boolean isPhoneNumberValid(String userPhoneNumber) {
-		if(userPhoneNumber.length() != 9 || userPhoneNumber.charAt(0) != '0'){
-			return false;
-		}else{
-			return true;
-		}
-	}
-
 
 
 	private boolean isAddressValid(String address) {
@@ -240,7 +231,7 @@ public class Order {
 
 
 
-	public void setProducts(HashMap<Product, Integer> products) {
+	public void setProducts(LinkedHashMap<Product, Integer> products) {
 		this.products = products;
 	}
 

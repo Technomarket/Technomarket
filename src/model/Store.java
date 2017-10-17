@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import model.exceptions.InvalidStoreDataException;
+import util.RegexValidator;
 
 public class Store {
 	//Exceptions мисля да е някъв глобален за store и да гърми когато има празни полета
@@ -20,7 +21,6 @@ public class Store {
 	private String email;
 	private String workingTime;
 	private String gps;
-	private static final String EMAIL_REGEX = "^(.+)@(.+)$";
 	
 	public Store(String phoneNumber, String email,
 			String workingTime, String gps, Address address) throws InvalidStoreDataException {
@@ -33,13 +33,13 @@ public class Store {
 			throw new InvalidStoreDataException();
 		}
 		//////////////////////////////
-		if(correctTelNumber(phoneNumber)){
+		if(RegexValidator.validateMobilePhoneNumber(phoneNumber)){
 			this.phoneNumber = phoneNumber;
 		}else{
 			throw new InvalidStoreDataException();
 		}
 		/////////////////////////////
-		if(correctEmail(email)){
+		if(RegexValidator.validateEmail(email)){
 			this.email = email;
 		}else{
 			throw new InvalidStoreDataException();
@@ -56,19 +56,6 @@ public class Store {
 			throw new InvalidStoreDataException();
 		}
 		this.product = new HashMap<>();
-	}
-	private boolean correctTelNumber(String phoneNumber){
-		if(phoneNumber.length() != 9 || phoneNumber.charAt(0) != '0'){
-			return false;
-		}else{
-			return true;
-		}
-	}
-	private boolean correctEmail(String email){
-		Pattern pattern = Pattern.compile(EMAIL_REGEX);
-		Matcher matcher = pattern.matcher(email);
-		
-		return matcher.matches();
 	}
 	
 	public class Address{

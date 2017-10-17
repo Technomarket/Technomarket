@@ -9,13 +9,17 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import model.Order;
 import model.Product;
 import model.User;
 import model.DBM.DBManager;
 import model.exceptions.IlligalAdminActionException;
+import model.exceptions.IlligalUserActionException;
+import model.exceptions.InvalidCategoryDataException;
 import model.exceptions.InvalidCharacteristicsDataException;
+import util.Encrypter;
 
 public class UserDAO {
 	private static UserDAO userDAO;
@@ -36,17 +40,17 @@ public class UserDAO {
 	public void insertUser(User user) throws SQLException {
 		String query = "INSERT INTO technomarket.users ( first_name, last_name, email, password, gender,date_of_birth, isAdmin,isAbonat,isBAnned)VALUES(?,?,?,?,?,?,?,?);";
 		this.connection = DBManager.getInstance().getConnections();
-		java.sql.PreparedStatement statment = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-		statment.setString(1, user.getFirstName());
-		statment.setString(2, user.getLastName());
-		statment.setString(3, user.getEmail());
-		statment.setString(4, user.getPassword());
-		statment.setString(5, user.getBirthDate().toString());
-		statment.setString(6, "" + user.getIsAdmin());
-		statment.setString(7, "" + user.getIsAbonat());
-		statment.setString(8, "" + user.getIsBanned());
-		statment.executeUpdate();
-		ResultSet resutSet = statment.getGeneratedKeys();
+		java.sql.PreparedStatement statement = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+		statement.setString(1, user.getFirstName());
+		statement.setString(2, user.getLastName());
+		statement.setString(3, user.getEmail());
+		statement.setString(4, Encrypter.encrypt(user.getPassword()));
+		statement.setString(5, user.getBirthDate().toString());
+		statement.setString(6, "" + user.getIsAdmin());
+		statement.setString(7, "" + user.getIsAbonat());
+		statement.setString(8, "" + user.getIsBanned());
+		statement.executeUpdate();
+		ResultSet resutSet = statement.getGeneratedKeys();
 		// Взимаме от базата идто и го слагаме на обекта;
 		// За да можем после да ми направим сесия;
 		while (resutSet.next()) {
@@ -58,10 +62,10 @@ public class UserDAO {
 	public boolean existingUser(String userName, String pasword) throws SQLException {
 		String checkQuery = "SELECT * FROM technomarket.users WHERE email = ? and pasword = ?";
 		this.connection = DBManager.getInstance().getConnections();
-		java.sql.PreparedStatement statment = this.connection.prepareStatement(checkQuery);
-		statment.setString(1, userName);
-		statment.setString(2, pasword);
-		ResultSet resultSet = statment.executeQuery();
+		java.sql.PreparedStatement statement = this.connection.prepareStatement(checkQuery);
+		statement.setString(1, userName);
+		statement.setString(2, Encrypter.encrypt(pasword));
+		ResultSet resultSet = statement.executeQuery();
 		if (resultSet.next()) {
 			return true;
 		}
@@ -81,11 +85,12 @@ public class UserDAO {
 
 	// Метода exitsUser проверява и ако каже че има се връща потребителя от този
 	// метод!
-	public User getUser(String userName) throws SQLException, InvalidCharacteristicsDataException {
-		String getQuery = "SELECT * FROM technomarket.users WHERE email =" + userName;
+	public User getUser(String userName) throws SQLException, InvalidCharacteristicsDataException, InvalidCategoryDataException {
+		String getQuery = "SELECT * FROM technomarket.users WHERE email = ?";
 		User user = new User();
-		java.sql.PreparedStatement statment = this.connection.prepareStatement(getQuery);
-		ResultSet result = statment.executeQuery();
+		java.sql.PreparedStatement statement = this.connection.prepareStatement(getQuery);
+		statement.setString(1, userName);
+		ResultSet result = statement.executeQuery();
 		result.next();
 		user.setId(result.getLong("id"));
 		user.setFirstName(result.getString("first_name"));
@@ -97,7 +102,7 @@ public class UserDAO {
 		user.setAdmin(result.getBoolean("isAdmin"));
 		user.setAbonat(result.getBoolean("isAbonat"));
 		user.setBanned(result.getBoolean("isBanned"));
-		HashSet<Order> orders = OrderDAO.getInstance().getOrdersForUser(result.getLong("id"));
+		LinkedHashSet<Order> orders = OrderDAO.getInstance().getOrdersForUser(result.getLong("id"));
 		user.setOrders(orders);
 		return user;
 	}
@@ -105,16 +110,23 @@ public class UserDAO {
 	// В сличай на забравена парола се проверава дали има такъв емайл ако има се
 	// праща емайл с паролата
 	public boolean checkEmail(String email) throws SQLException {
-		String getQuery = "SELECT users.email FROM technomarket.users WHERE users.email =" + email;
+		String getQuery = "SELECT users.email FROM technomarket.users WHERE users.email = ?";
 		this.connection = DBManager.getInstance().getConnections();
-		java.sql.PreparedStatement statments = this.connection.prepareStatement(getQuery);
-		ResultSet result = statments.executeQuery();
+		java.sql.PreparedStatement statement = this.connection.prepareStatement(getQuery);
+		statement.setString(1, email);
+		ResultSet result = statement.executeQuery();
 		if (result.next()) {
 			return true;
 		}
 		return false;
 	}
 
+	//user confirming his order:
+	
+	public void confirmOrder(Order o, boolean isConfirmed) throws SQLException, IlligalUserActionException{
+		OrderDAO.getInstance().setOrderAsConfirmed(o, isConfirmed);
+	}
+	
 	
 	//favourite products:
 	
@@ -122,10 +134,10 @@ public class UserDAO {
 	public void addInFavorite(User user, Product product) throws SQLException {
 		String query = "INSER INTO technomarket.users_has_favourite (user_id, product_id) VALUES (?, ?)";
 		this.connection = DBManager.getInstance().getConnections();
-		java.sql.PreparedStatement statment = this.connection.prepareStatement(query);
-		statment.setLong(1, user.getUserId());
-		statment.setLong(2,product.getProductId());
-		statment.executeQuery();
+		java.sql.PreparedStatement statement = this.connection.prepareStatement(query);
+		statement.setLong(1, user.getUserId());
+		statement.setLong(2,product.getProductId());
+		statement.executeQuery();
 	}
 	
 	//Remove favourite product:
@@ -157,7 +169,7 @@ public class UserDAO {
 			product.setDateAdded(LocalDate.parse(result.getString("date_added")));
 			product.setProductNumber(result.getString("product_number"));
 			product.setProductId(result.getLong("product_id"));
-			product.setTradeMark(ProductDAO.getInstance().getTradMark(product.getProductId()));
+			product.setTradeMark(ProductDAO.getInstance().getTradeMark(product.getProductId()));
 			products.add(product);
 		}
 		System.out.println("Favourute from User");

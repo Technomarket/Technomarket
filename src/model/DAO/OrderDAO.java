@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
 import model.Characteristics;
@@ -20,6 +22,8 @@ import model.Product;
 import model.User;
 import model.DBM.DBManager;
 import model.exceptions.IlligalAdminActionException;
+import model.exceptions.IlligalUserActionException;
+import model.exceptions.InvalidCategoryDataException;
 import model.exceptions.InvalidCharacteristicsDataException;
 
 public class OrderDAO {
@@ -38,8 +42,8 @@ public class OrderDAO {
 	}
 
 	//-> select all orders per user_id, fill them in HashSet, select all products per Order, their quantity, and fields it in HashMap of every Order:
-	public HashSet<Order> getOrdersForUser(long long1) throws SQLException, InvalidCharacteristicsDataException {
-		HashSet<Order> orders = new HashSet<>();
+	public LinkedHashSet<Order> getOrdersForUser(long long1) throws SQLException, InvalidCharacteristicsDataException, InvalidCategoryDataException {
+		LinkedHashSet<Order> orders = new LinkedHashSet<>();
 		String query = "SELECT * FROM technomarket.orders WHERE user_id = ?;";
 		this.connection = DBManager.getInstance().getConnections();
 		PreparedStatement statment = this.connection.prepareStatement(query);
@@ -55,7 +59,7 @@ public class OrderDAO {
 			o.setConfirmed(result.getBoolean("isCnfirmed"));
 			o.setPaid(result.getBoolean("isPaid"));
 			o.setShipingType(getTheRightShipingType(result.getString("shiping_type")));
-			HashMap<Product, Integer> products = fillAllProductsInOrder(o);
+			LinkedHashMap<Product, Integer> products = fillAllProductsInOrder(o);
 			o.setProducts(products);
 		}
 		return orders;
@@ -64,8 +68,8 @@ public class OrderDAO {
 	
 
 
-	private HashMap<Product, Integer> fillAllProductsInOrder(Order o) throws SQLException, InvalidCharacteristicsDataException {
-		HashMap<Product, Integer> products = new HashMap<>();
+	private LinkedHashMap<Product, Integer> fillAllProductsInOrder(Order o) throws SQLException, InvalidCharacteristicsDataException, InvalidCategoryDataException {
+		LinkedHashMap<Product, Integer> products = new LinkedHashMap<>();
 		String query = "SELECT * FROM technomarket.order_has_product WHERE order_id = ?;";
 		this.connection = DBManager.getInstance().getConnections();
 		PreparedStatement statment = this.connection.prepareStatement(query);
@@ -127,13 +131,11 @@ public class OrderDAO {
 		}
 	}
 	
-	//admin panel in Orders:
-	
-	public void setOrderAsConfirmed(Order o, boolean isConfirmed) throws IlligalAdminActionException, SQLException {
+	public void setOrderAsConfirmed(Order o, boolean isConfirmed) throws SQLException, IlligalUserActionException {
 		if (o.getIsConfirmed() && isConfirmed) {
-			throw new IlligalAdminActionException();
+			throw new IlligalUserActionException();
 		} else if (!o.getIsConfirmed() && !isConfirmed) {
-			throw new IlligalAdminActionException();
+			throw new IlligalUserActionException();
 		} else {
 			Connection con = DBManager.getInstance().getConnections();
 			PreparedStatement ps = con.prepareStatement("UPDATE technomarket.orders SET isConfirmed = ? WHERE order_id = ?",
@@ -144,6 +146,8 @@ public class OrderDAO {
 		}
 		
 	}
+	
+	//admin panel in Orders:
 
 	public void setOrderAsPaid(Order o, boolean isPaid) throws IlligalAdminActionException, SQLException {
 		if (o.getIsConfirmed() && isPaid) {

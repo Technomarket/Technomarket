@@ -36,31 +36,7 @@ public class AdminDAO {
 	
 	public void insertNewProduct(Product p, User admin) throws SQLException, NotAnAdminException{
 		if(admin.getIsAdmin()){
-			//inserts Product into product table:
-			int tradeMarkId = getTradeMarkId(p.getTradeMark());
-			Connection con = DBManager.getInstance().getConnections();
-			PreparedStatement ps = con.prepareStatement("INSERT INTO technomarket.product (trade_mark_id, credit_id, product_name, price, warranty, percent_promo, date_added, product_number) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-			ps.setInt(1, tradeMarkId);
-			ps.setString(2, null);
-			ps.setString(3, p.getName());
-			ps.setBigDecimal(4, p.getPrice());
-			ps.setInt(5, p.getWorranty());
-			ps.setInt(6, p.getPercentPromo());
-			ps.setString(7, LocalDate.now().toString());
-			ps.setString(8, p.getProductNumber());
-			ps.executeUpdate();
-			ResultSet rs = ps.getGeneratedKeys();
-			rs.next();
-			p.setProductId(rs.getLong(1));	
-			
-			//insert Product and its Category into product_has_category table:
-			insertProductIntoProductHasCategory(p);
-			
-			//insert new row in characteristics table with the product id and its characteristics name and type:
-			insertProductIntoCharacteristics(p);
-			
-			
+			ProductDAO.getInstance().insertNewProduct(p);
 		}else{
 			throw new NotAnAdminException();
 		}
@@ -130,15 +106,6 @@ public class AdminDAO {
 	public void changeUserIsBannedStatus(User admin, User u, boolean isBanned) throws NotAnAdminException, SQLException, IlligalAdminActionException{
 		if(admin.getIsAdmin()){
 			UserDAO.getInstance().changeUserIsBannedStatus(u, isBanned);
-		}else{
-			throw new NotAnAdminException();
-		}
-	}
-	
-	//set order as confirmed:
-	public void setOrderAsConfirmed(User admin, Order o, boolean isConfirmed) throws NotAnAdminException, SQLException, IlligalAdminActionException{
-		if(admin.getIsAdmin()){
-			OrderDAO.getInstance().setOrderAsConfirmed(o, isConfirmed);
 		}else{
 			throw new NotAnAdminException();
 		}
