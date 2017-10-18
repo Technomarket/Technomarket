@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import model.Category;
 import model.Characteristics;
@@ -17,6 +19,7 @@ import model.Product.campareEnum;
 import model.DBM.DBManager;
 import model.exceptions.InvalidCategoryDataException;
 import model.exceptions.InvalidCharacteristicsDataException;
+import model.exceptions.InvalidProductDataException;
 
 public class ProductDAO {
 	private static ProductDAO productDAO;
@@ -34,7 +37,8 @@ public class ProductDAO {
 	}
 
 	// Метод който връща даден продукт от базата
-	public Product getProduct(long productID) throws SQLException, InvalidCharacteristicsDataException, InvalidCategoryDataException {
+	public Product getProduct(long productID)
+			throws SQLException, InvalidCharacteristicsDataException, InvalidCategoryDataException {
 		String query = "SELECT * FROM technomarket.product WHERE product_id = ?;";
 		this.connection = DBManager.getInstance().getConnections();
 		PreparedStatement statment = this.connection.prepareStatement(query);
@@ -51,7 +55,8 @@ public class ProductDAO {
 		pro.setProductId(result.getLong("product_id"));
 		pro.setTradeMark(getTradeMark(pro.getProductId()));
 		pro.setImageUrl(result.getString("image_url"));
-		ArrayList<Characteristics> characteristics = CharacterisicsDAO.getInstance().getProducsCharacteristics(pro.getProductId());
+		ArrayList<Characteristics> characteristics = CharacterisicsDAO.getInstance()
+				.getProducsCharacteristics(pro.getProductId());
 		pro.setCharacteristics(characteristics);
 		pro.setCategory(CategoryDAO.getInstance().getProductsCategory(pro.getProductId()));
 		return pro;
@@ -77,53 +82,56 @@ public class ProductDAO {
 		ps.executeUpdate();
 	}
 
-	//insert product module:
-	
-	public void insertNewProduct(Product p) throws SQLException{
-			//inserts Product into product table:
-			int tradeMarkId = getTradeMarkId(p.getTradeMark());
-			Connection con = DBManager.getInstance().getConnections();
-			PreparedStatement ps = con.prepareStatement("INSERT INTO technomarket.product (trade_mark_id, credit_id, product_name, price, warranty, percent_promo, date_added, product_number, image_url) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-			ps.setInt(1, tradeMarkId);
-			ps.setString(2, null);
-			ps.setString(3, p.getName());
-			ps.setBigDecimal(4, p.getPrice());
-			ps.setInt(5, p.getWorranty());
-			ps.setInt(6, p.getPercentPromo());
-			ps.setString(7, LocalDate.now().toString());
-			ps.setString(8, p.getProductNumber());
-			ps.setString(9, p.getImageUrl());
-			ps.executeUpdate();
-			ResultSet rs = ps.getGeneratedKeys();
-			rs.next();
-			p.setProductId(rs.getLong(1));	
-			
-			//insert Product and its Category into product_has_category table:
-			insertProductIntoProductHasCategory(p);
-			
-			//insert new row in characteristics table with the product id and its characteristics name and type:
-			insertProductIntoCharacteristics(p);
-		
+	// insert product module:
+
+	public void insertNewProduct(Product p) throws SQLException {
+		// inserts Product into product table:
+		int tradeMarkId = getTradeMarkId(p.getTradeMark());
+		Connection con = DBManager.getInstance().getConnections();
+		PreparedStatement ps = con.prepareStatement(
+				"INSERT INTO technomarket.product (trade_mark_id, credit_id, product_name, price, warranty, percent_promo, date_added, product_number, image_url) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
+				Statement.RETURN_GENERATED_KEYS);
+		ps.setInt(1, tradeMarkId);
+		ps.setString(2, null);
+		ps.setString(3, p.getName());
+		ps.setBigDecimal(4, p.getPrice());
+		ps.setInt(5, p.getWorranty());
+		ps.setInt(6, p.getPercentPromo());
+		ps.setString(7, LocalDate.now().toString());
+		ps.setString(8, p.getProductNumber());
+		ps.setString(9, p.getImageUrl());
+		ps.executeUpdate();
+		ResultSet rs = ps.getGeneratedKeys();
+		rs.next();
+		p.setProductId(rs.getLong(1));
+
+		// insert Product and its Category into product_has_category table:
+		insertProductIntoProductHasCategory(p);
+
+		// insert new row in characteristics table with the product id and its
+		// characteristics name and type:
+		insertProductIntoCharacteristics(p);
+
 	}
 
 	private void insertProductIntoCharacteristics(Product p) throws SQLException {
 		CharacterisicsDAO.getInstance().addProductInCharacteristicsTable(p);
 	}
-	
+
 	private void insertProductIntoProductHasCategory(Product p) throws SQLException {
 		CategoryDAO.getInstance().insertProductIntoProductHasCategory(p);
 	}
 
 	private int getTradeMarkId(String tradeMark) throws SQLException {
 		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement("SELECT trade_mark_id FROM technomarket.trade_marks WHERE trade_mark_name LIKE '?';");
+		PreparedStatement ps = con
+				.prepareStatement("SELECT trade_mark_id FROM technomarket.trade_marks WHERE trade_mark_name LIKE '?';");
 		ps.setString(1, tradeMark);
 		ResultSet rs = ps.executeQuery();
 		rs.next();
 		return rs.getInt("trade_mark_id");
 	}
-	
 
 	// remove product module:
 
@@ -181,14 +189,13 @@ public class ProductDAO {
 	}
 
 	// Search product by category
-	public List<Product> searchProductByCategory(Category category, campareEnum campare)
-			throws SQLException {
+	public List<Product> searchProductByCategory(Category category, campareEnum campare) throws SQLException {
 		String orderBy = "";
-		if(campare == campareEnum.defaultt){
-			//default date_added
-			orderBy+="date_added";
-		}else{
-			orderBy+=campare;
+		if (campare == campareEnum.defaultt) {
+			// default date_added
+			orderBy += "date_added";
+		} else {
+			orderBy += campare;
 		}
 		LinkedList<Product> products = new LinkedList<>();
 		this.connection = DBManager.getInstance().getConnections();
@@ -198,24 +205,133 @@ public class ProductDAO {
 						+ "JOIN technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id)"
 						+ "JOIN technomarket.product_has_category ON(product_has_category.product_id = product_has_category.category_id)"
 						+ "JOIN technomarket.categories on(categories.category_id = product_has_category.category_id) WHERE technomarket.categories.categoy_name = ? GROUP BY ? ORDER BY ?");
-        statement.setString(1, category.getName());
-        statement.setString(2, orderBy);
-        statement.setString(3, orderBy);
-        ResultSet result = statement.executeQuery();
-        while(result.next()){
-        	Product pro = new Product();
-        	pro.setProductId(result.getLong(1));
-        	pro.setTradeMark(result.getString(2));
-        	pro.setName(result.getString(3));
-        	pro.setPrice(result.getString(4));
-        	pro.setWorranty(result.getInt(5));
-        	pro.setPercentPromo(result.getInt(6));
-        	pro.setDateAdded(LocalDate.parse(result.getString(7)));
-        	pro.setProductNumber(result.getString(8));
-        	products.add(pro);
-        }
+		statement.setString(1, category.getName());
+		statement.setString(2, orderBy);
+		statement.setString(3, orderBy);
+		ResultSet result = statement.executeQuery();
+		while (result.next()) {
+			Product pro = new Product();
+			pro.setProductId(result.getLong(1));
+			pro.setTradeMark(result.getString(2));
+			pro.setName(result.getString(3));
+			pro.setPrice(result.getString(4));
+			pro.setWorranty(result.getInt(5));
+			pro.setPercentPromo(result.getInt(6));
+			pro.setDateAdded(LocalDate.parse(result.getString(7)));
+			pro.setProductNumber(result.getString(8));
+			products.add(pro);
+		}
 		return products;
 
+	}
+
+	// Search product with promo price
+	public Set<Product> getPromoProduct() throws SQLException {
+		LinkedHashSet<Product> products = new LinkedHashSet<>();
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement statement = this.connection.prepareStatement(
+				"SELECT product.product_id, trade_marks.trade_mark_name, product.product_name, product.price,product.warranty, product.percent_promo, product.date_added, product.product_number, product.image_url FROM technomarket.product JOIN technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id)  WHERE product.percent_promo > 0");
+		ResultSet result = statement.executeQuery();
+		Product product = null;
+		while (result.next()) {
+			product = new Product();
+			product.setProductId(result.getLong(1));
+			product.setTradeMark(result.getString(2));
+			product.setName(result.getString(3));
+			product.setPrice(result.getString(4));
+			product.setWorranty(result.getInt(5));
+			product.setPercentPromo(result.getInt(6));
+			product.setDateAdded(LocalDate.parse(result.getString(7)));
+			product.setProductNumber(result.getString(8));
+			product.setImageUrl(result.getString(9));
+			products.add(product);
+		}
+		return products;
+	}
+
+	// Search produc where trade marke is apple
+
+	public Set<Product> getAppleProduct() throws SQLException {
+		LinkedHashSet<Product> products = new LinkedHashSet<>();
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement statement = this.connection.prepareStatement(
+				"SELECT product.product_id, trade_marks.trade_mark_name, product.product_name, product.price,product.warranty, product.percent_promo, product.date_added, product.product_number, product.image_url FROM technomarket.product JOIN technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id)  WHERE trade_mark_name LIKE 'apple%' or LIKE 'ipad'");
+		ResultSet result = statement.executeQuery();
+		Product product = null;
+		while (result.next()) {
+			product = new Product();
+			product.setProductId(result.getLong(1));
+			product.setTradeMark(result.getString(2));
+			product.setName(result.getString(3));
+			product.setPrice(result.getString(4));
+			product.setWorranty(result.getInt(5));
+			product.setPercentPromo(result.getInt(6));
+			product.setDateAdded(LocalDate.parse(result.getString(7)));
+			product.setProductNumber(result.getString(8));
+			product.setImageUrl(result.getString(9));
+			products.add(product);
+		}
+		return products;
+	}
+
+	// Search product by price
+	public Set<Product> searchProductByPrice(String fromPrice, String toPrice)
+			throws InvalidProductDataException, SQLException {
+		LinkedHashSet<Product> products = new LinkedHashSet<>();
+		if (fromPrice.compareTo(toPrice) > 0) {
+			throw new InvalidProductDataException();
+		}
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement statement = this.connection.prepareStatement(
+				"SELECT product.product_id, product.product_name, product.price, product.product_number"
+						+ ",trade_marks.trade_mark_name , product.warranty, product.percent_promo"
+						+ "FROM technomarket.product JOIN technomarket.trade_marks on(product.trade_mark_id = trade_marks.trade_mark_id)"
+						+ "WHERE product.price" + "between ? and ?");
+		statement.setString(1, fromPrice);
+		statement.setString(2, toPrice);
+		ResultSet result = statement.executeQuery();
+		Product product = null;
+		while (result.next()) {
+			product = new Product();
+			product.setProductId(result.getLong(1));
+			product.setName(result.getString(2));
+			product.setPrice(result.getString(3));
+			product.setProductNumber(result.getString(4));
+			product.setTradeMark(result.getString(5));
+			product.setWorranty(result.getInt(6));
+			product.setPercentPromo(result.getInt(7));
+			products.add(product);
+		}
+
+		return products;
+	}
+
+	// Search produc where category is home
+	public Set<Product> searchProductWithCategoryHome() throws SQLException {
+		LinkedHashSet<Product> products = new LinkedHashSet<>();
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement statement = this.connection.prepareStatement(
+				"select product.product_id, product.product_name, product.price, product.product_number,"
+						+ "trade_marks.trade_mark_name , product.warranty, product.percent_promo , categories.categoy_name"
+						+ "from technomarket.product join technomarket.trade_marks on(product.trade_mark_id = trade_marks.trade_mark_id)"
+						+ "join technomarket.categories on(product.credit_id = categories.category_id)"
+						+ "where categoy_name = 'Home'");
+		ResultSet result = statement.executeQuery();
+		Product product = null;
+		while(result.next()){
+			product = new Product();
+			product.setProductId(result.getLong(1));
+			product.setName(result.getString(2));
+			product.setPrice(result.getString(3));
+			product.setProductNumber(result.getString(4));
+			product.setTradeMark(result.getString(5));
+			product.setWorranty(result.getInt(6));
+			product.setPercentPromo(result.getInt(7));
+			products.add(product);
+		}
+		
+
+		return products;
 	}
 
 }
