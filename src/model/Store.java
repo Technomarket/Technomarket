@@ -21,9 +21,14 @@ public class Store {
 	private String email;
 	private String workingTime;
 	private String gps;
+	private String storeImageUrl;
+	
+	public Store(){
+		
+	}
 	
 	public Store(String phoneNumber, String email,
-			String workingTime, String gps, Address address) throws InvalidStoreDataException {
+			String workingTime, String gps, Address address, String storeImageUrl) throws InvalidStoreDataException {
 		
 //		this.city = city;
 //		this.address = address;
@@ -52,6 +57,11 @@ public class Store {
 		}
 		if(gps != null && !gps.isEmpty()){
 			this.gps = gps;
+		}else{
+			throw new InvalidStoreDataException();
+		}
+		if(storeImageUrl != null && !storeImageUrl.isEmpty()){
+			this.storeImageUrl = storeImageUrl;
 		}else{
 			throw new InvalidStoreDataException();
 		}
@@ -104,6 +114,102 @@ public class Store {
 	public String getGps() {
 		return gps;
 	}
+	public String getStoreImageUrl() {
+		return storeImageUrl;
+	}
+	public void setStoreImageUrl(String storeImageUrl) {
+		this.storeImageUrl = storeImageUrl;
+	}
+	
+	
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setWorkingTime(String workingTime) {
+		this.workingTime = workingTime;
+	}
+
+	public void setGps(String gps) {
+		this.gps = gps;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((address == null) ? 0 : address.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((gps == null) ? 0 : gps.hashCode());
+		result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
+		result = prime * result + ((product == null) ? 0 : product.hashCode());
+		result = prime * result + (int) (storeId ^ (storeId >>> 32));
+		result = prime * result + ((storeImageUrl == null) ? 0 : storeImageUrl.hashCode());
+		result = prime * result + ((workingTime == null) ? 0 : workingTime.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Store other = (Store) obj;
+		if (address == null) {
+			if (other.address != null)
+				return false;
+		} else if (!address.equals(other.address))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (gps == null) {
+			if (other.gps != null)
+				return false;
+		} else if (!gps.equals(other.gps))
+			return false;
+		if (phoneNumber == null) {
+			if (other.phoneNumber != null)
+				return false;
+		} else if (!phoneNumber.equals(other.phoneNumber))
+			return false;
+		if (product == null) {
+			if (other.product != null)
+				return false;
+		} else if (!product.equals(other.product))
+			return false;
+		if (storeId != other.storeId)
+			return false;
+		if (storeImageUrl == null) {
+			if (other.storeImageUrl != null)
+				return false;
+		} else if (!storeImageUrl.equals(other.storeImageUrl))
+			return false;
+		if (workingTime == null) {
+			if (other.workingTime != null)
+				return false;
+		} else if (!workingTime.equals(other.workingTime))
+			return false;
+		return true;
+	}
+	
+	
 	
 	
 	

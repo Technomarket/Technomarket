@@ -7,10 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import model.Category;
 import model.Characteristics;
@@ -165,10 +163,10 @@ public class ProductDAO {
 	// Search product by name;
 	public Product searchProductByName(String productName) throws SQLException {
 		this.connection = DBManager.getInstance().getConnections();
-		PreparedStatement statement = this.connection.prepareStatement(
-				"SELECT product.product_id, trade_marks.trade_mark_name, product.product_name, product.price,product.warranty, product.percent_promo, product.date_added, product.product_number, product.image_url FROM technomarket.product JOIN technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id)  WHERE product.product_name LIKE '%?%'");
-		statement.setString(1, productName);
-		ResultSet result = statement.executeQuery();
+		PreparedStatement statment = this.connection.prepareStatement(
+				"SELECT product.product_id, trade_marks.trade_mark_name, product.product_name, product.price,product.warranty, product.percent_promo, product.date_added, product.product_number FROM technomarket.product JOIN technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id)  WHERE product.product_name = ?");
+		statment.setString(1, productName);
+		ResultSet result = statment.executeQuery();
 		Product product = new Product();
 		result.next();
 		product.setProductId(result.getLong(1));
@@ -179,7 +177,6 @@ public class ProductDAO {
 		product.setPercentPromo(result.getInt(6));
 		product.setDateAdded(LocalDate.parse(result.getString(7)));
 		product.setProductNumber(result.getString(8));
-		product.setImageUrl(result.getString(9));
 		return product;
 	}
 
@@ -219,53 +216,6 @@ public class ProductDAO {
         }
 		return products;
 
-	}
-	
-	//Search product with promo price
-	public Set<Product> getPromoProduct() throws SQLException{
-		LinkedHashSet<Product> products = new LinkedHashSet<>();
-		this.connection = DBManager.getInstance().getConnections();
-		PreparedStatement statement = this.connection.prepareStatement("SELECT product.product_id, trade_marks.trade_mark_name, product.product_name, product.price,product.warranty, product.percent_promo, product.date_added, product.product_number, product.image_url FROM technomarket.product JOIN technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id)  WHERE product.percent_promo > 0");
-		ResultSet result = statement.executeQuery();
-		Product product = null;
-		while(result.next()){
-		   product = new Product();
-		   product.setProductId(result.getLong(1));
-		   product.setTradeMark(result.getString(2));
-		   product.setName(result.getString(3));
-		   product.setPrice(result.getString(4));
-		   product.setWorranty(result.getInt(5));
-		   product.setPercentPromo(result.getInt(6));
-		   product.setDateAdded(LocalDate.parse(result.getString(7)));
-		   product.setProductNumber(result.getString(8));
-		   product.setImageUrl(result.getString(9));
-		   products.add(product);
-		}
-		return products;
-	}
-	
-	//Search produc where trade marke is apple
-	
-	public Set<Product> getAppleProduct() throws SQLException{
-		LinkedHashSet<Product> products = new LinkedHashSet<>();
-		this.connection = DBManager.getInstance().getConnections();
-		PreparedStatement statement = this.connection.prepareStatement("SELECT product.product_id, trade_marks.trade_mark_name, product.product_name, product.price,product.warranty, product.percent_promo, product.date_added, product.product_number, product.image_url FROM technomarket.product JOIN technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id)  WHERE trade_mark_name LIKE 'apple%' or LIKE 'ipad'");
-		ResultSet result = statement.executeQuery();
-		Product product = null;
-		while(result.next()){
-		   product = new Product();
-		   product.setProductId(result.getLong(1));
-		   product.setTradeMark(result.getString(2));
-		   product.setName(result.getString(3));
-		   product.setPrice(result.getString(4));
-		   product.setWorranty(result.getInt(5));
-		   product.setPercentPromo(result.getInt(6));
-		   product.setDateAdded(LocalDate.parse(result.getString(7)));
-		   product.setProductNumber(result.getString(8));
-		   product.setImageUrl(result.getString(9));
-		   products.add(product);
-		}
-		return products;
 	}
 
 }

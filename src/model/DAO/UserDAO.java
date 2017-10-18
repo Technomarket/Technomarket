@@ -15,6 +15,7 @@ import model.Order;
 import model.Product;
 import model.User;
 import model.DBM.DBManager;
+import model.exceptions.EmailAlreadyInUseException;
 import model.exceptions.IlligalAdminActionException;
 import model.exceptions.IlligalUserActionException;
 import model.exceptions.InvalidCategoryDataException;
@@ -36,29 +37,34 @@ public class UserDAO {
 		return userDAO;
 	}
 
-	// При регистриране създава потребител и го пуска в базата
-	public void insertUser(User user) throws SQLException {
-		String query = "INSERT INTO technomarket.users ( first_name, last_name, email, password, gender,date_of_birth, isAdmin,isAbonat,isBAnned)VALUES(?,?,?,?,?,?,?,?);";
-		this.connection = DBManager.getInstance().getConnections();
-		java.sql.PreparedStatement statement = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-		statement.setString(1, user.getFirstName());
-		statement.setString(2, user.getLastName());
-		statement.setString(3, user.getEmail());
-		statement.setString(4, Encrypter.encrypt(user.getPassword()));
-		statement.setString(5, user.getBirthDate().toString());
-		statement.setString(6, "" + user.getIsAdmin());
-		statement.setString(7, "" + user.getIsAbonat());
-		statement.setString(8, "" + user.getIsBanned());
-		statement.executeUpdate();
-		ResultSet resutSet = statement.getGeneratedKeys();
-		// Взимаме от базата идто и го слагаме на обекта;
-		// За да можем после да ми направим сесия;
-		while (resutSet.next()) {
-			user.setId(resutSet.getInt(1));
+	// registration of user:
+	public void insertUser(User user) throws SQLException, EmailAlreadyInUseException {
+		if (checkIfUserWithSameEmailExist(user.getEmail())) {
+			throw new EmailAlreadyInUseException();
+		} else {
+			String query = "INSERT INTO technomarket.users ( first_name, last_name, email, password, gender,date_of_birth, isAdmin,isAbonat,isBAnned)VALUES(?,?,?,?,?,?,?,?);";
+			this.connection = DBManager.getInstance().getConnections();
+			java.sql.PreparedStatement statement = this.connection.prepareStatement(query,
+					Statement.RETURN_GENERATED_KEYS);
+			statement.setString(1, user.getFirstName());
+			statement.setString(2, user.getLastName());
+			statement.setString(3, user.getEmail());
+			statement.setString(4, Encrypter.encrypt(user.getPassword()));
+			statement.setString(5, user.getBirthDate().toString());
+			statement.setString(6, "" + user.getIsAdmin());
+			statement.setString(7, "" + user.getIsAbonat());
+			statement.setString(8, "" + user.getIsBanned());
+			statement.executeUpdate();
+			ResultSet resutSet = statement.getGeneratedKeys();
+			// Взимаме от базата идто и го слагаме на обекта;
+			// За да можем после да ми направим сесия;
+			while (resutSet.next()) {
+				user.setId(resutSet.getInt(1));
+			}
 		}
 	}
 
-	// Проверява при логване дали има такъв потребител!
+	// log in of user:
 	public boolean existingUser(String userName, String pasword) throws SQLException {
 		String checkQuery = "SELECT * FROM technomarket.users WHERE email = ? and pasword = ?";
 		this.connection = DBManager.getInstance().getConnections();
@@ -85,7 +91,8 @@ public class UserDAO {
 
 	// Метода exitsUser проверява и ако каже че има се връща потребителя от този
 	// метод!
-	public User getUser(String userName) throws SQLException, InvalidCharacteristicsDataException, InvalidCategoryDataException {
+	public User getUser(String userName)
+			throws SQLException, InvalidCharacteristicsDataException, InvalidCategoryDataException {
 		String getQuery = "SELECT * FROM technomarket.users WHERE email = ?";
 		User user = new User();
 		java.sql.PreparedStatement statement = this.connection.prepareStatement(getQuery);
@@ -107,12 +114,11 @@ public class UserDAO {
 		return user;
 	}
 
-	// В сличай на забравена парола се проверава дали има такъв емайл ако има се
-	// праща емайл с паролата
-	public boolean checkEmail(String email) throws SQLException {
+	// Checks if the email exist in DB in connection with user. Used when password is forgotten or to check is such user is already registrated:
+	public boolean checkIfUserWithSameEmailExist(String email) throws SQLException {
 		String getQuery = "SELECT users.email FROM technomarket.users WHERE users.email = ?";
 		this.connection = DBManager.getInstance().getConnections();
-		java.sql.PreparedStatement statement = this.connection.prepareStatement(getQuery);
+		PreparedStatement statement = this.connection.prepareStatement(getQuery);
 		statement.setString(1, email);
 		ResultSet result = statement.executeQuery();
 		if (result.next()) {
@@ -121,27 +127,26 @@ public class UserDAO {
 		return false;
 	}
 
-	//user confirming his order:
-	
-	public void confirmOrder(Order o, boolean isConfirmed) throws SQLException, IlligalUserActionException{
+	// user confirming his order:
+
+	public void confirmOrder(Order o, boolean isConfirmed) throws SQLException, IlligalUserActionException {
 		OrderDAO.getInstance().setOrderAsConfirmed(o, isConfirmed);
 	}
-	
-	
-	//favourite products:
-	
+
+	// favourite products:
+
 	// Adding favourite product to user account:
 	public void addInFavorite(User user, Product product) throws SQLException {
 		String query = "INSER INTO technomarket.users_has_favourite (user_id, product_id) VALUES (?, ?)";
 		this.connection = DBManager.getInstance().getConnections();
 		java.sql.PreparedStatement statement = this.connection.prepareStatement(query);
 		statement.setLong(1, user.getUserId());
-		statement.setLong(2,product.getProductId());
+		statement.setLong(2, product.getProductId());
 		statement.executeQuery();
 	}
-	
-	//Remove favourite product:
-	public void removeFavouriteProduct(User u, Product p) throws SQLException{
+
+	// Remove favourite product:
+	public void removeFavouriteProduct(User u, Product p) throws SQLException {
 		String query = "DELETE FROM technomarket.user_has_favouite WHERE user_id = ? AND product_id = ?";
 		this.connection = DBManager.getInstance().getConnections();
 		java.sql.PreparedStatement statment = this.connection.prepareStatement(query);
@@ -149,7 +154,6 @@ public class UserDAO {
 		statment.setLong(2, p.getProductId());
 		statment.executeQuery();
 	}
-	
 
 	// Listing all favourite products:
 	public void viewFavourite(User user) throws SQLException {
@@ -178,8 +182,8 @@ public class UserDAO {
 		}
 	}
 
-	//user statuses:
-	
+	// user statuses, used by admins:
+
 	public void changeUserIsAdminStatus(User u, boolean isAdmin) throws SQLException, IlligalAdminActionException {
 		if (u.getIsAdmin() && isAdmin) {
 			throw new IlligalAdminActionException();

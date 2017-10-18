@@ -42,23 +42,6 @@ public class AdminDAO {
 		}
 		
 	}
-
-	private void insertProductIntoCharacteristics(Product p) throws SQLException {
-		CharacterisicsDAO.getInstance().addProductInCharacteristicsTable(p);
-	}
-	
-	private void insertProductIntoProductHasCategory(Product p) throws SQLException {
-		CategoryDAO.getInstance().insertProductIntoProductHasCategory(p);
-	}
-
-	private int getTradeMarkId(String tradeMark) throws SQLException {
-		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement("SELECT trade_mark_id FROM technomarket.trade_marks WHERE trade_mark_name LIKE '?';");
-		ps.setString(1, tradeMark);
-		ResultSet rs = ps.executeQuery();
-		rs.next();
-		return rs.getInt("trade_mark_id");
-	}
 	
 	public void removeProduct(Product p, User admin) throws NotAnAdminException, SQLException{
 		if(admin.getIsAdmin()){
