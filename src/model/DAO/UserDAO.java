@@ -66,7 +66,7 @@ public class UserDAO {
 
 	// log in of user:
 	public boolean existingUser(String userName, String pasword) throws SQLException {
-		String checkQuery = "SELECT * FROM technomarket.users WHERE email = ? and pasword = ?";
+		String checkQuery = "SELECT * FROM technomarket.users WHERE email = ? and password = ?";
 		this.connection = DBManager.getInstance().getConnections();
 		java.sql.PreparedStatement statement = this.connection.prepareStatement(checkQuery);
 		statement.setString(1, userName);

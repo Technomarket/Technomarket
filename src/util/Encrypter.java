@@ -6,19 +6,24 @@ import java.security.NoSuchAlgorithmException;
 
 public class Encrypter {
 
-	private Encrypter(){}
+	private static final String salt = "pepper";
 	
-	public static String encrypt(String text){
+	private Encrypter(){
+		
+	}
+	
+	public static String encrypt(String password){
+		String saltedPassword = password + salt; 
 		MessageDigest digest = null;
 		try {
 			digest = MessageDigest.getInstance("SHA-256");
 		} catch (NoSuchAlgorithmException e) {
-			System.out.println("Ops");
+			System.err.println("Sometung went wrong - blank error message");
 		}
 		if(digest == null){
-			return text;
+			return password;
 		}
-		byte[] hash = digest.digest(text.getBytes(StandardCharsets.UTF_8));
+		byte[] hash = digest.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
 		return new String(hash);
 	}
 }

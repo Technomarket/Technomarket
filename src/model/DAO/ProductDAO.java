@@ -39,27 +39,29 @@ public class ProductDAO {
 	// Метод който връща даден продукт от базата
 	public Product getProduct(long productID)
 			throws SQLException, InvalidCharacteristicsDataException, InvalidCategoryDataException {
+
 		String query = "SELECT * FROM technomarket.product WHERE product_id = ?;";
 		this.connection = DBManager.getInstance().getConnections();
-		PreparedStatement statment = this.connection.prepareStatement(query);
-		statment.setLong(1, productID);
-		ResultSet result = statment.executeQuery();
-		Product pro = new Product();
-		result.next();
-		pro.setName(result.getString("product_name"));
-		pro.setPrice(result.getString("price"));
-		pro.setWorranty(result.getInt("warranty"));
-		pro.setPercentPromo(result.getInt("percent_promo"));
-		pro.setDateAdded(LocalDate.parse(result.getString("date_added")));
-		pro.setProductNumber(result.getString("product_number"));
-		pro.setProductId(result.getLong("product_id"));
-		pro.setTradeMark(getTradeMark(pro.getProductId()));
-		pro.setImageUrl(result.getString("image_url"));
-		ArrayList<Characteristics> characteristics = CharacterisicsDAO.getInstance()
-				.getProducsCharacteristics(pro.getProductId());
-		pro.setCharacteristics(characteristics);
-		pro.setCategory(CategoryDAO.getInstance().getProductsCategory(pro.getProductId()));
-		return pro;
+			PreparedStatement statment = this.connection.prepareStatement(query);
+			statment.setLong(1, productID);
+			this.connection.commit();
+			ResultSet result = statment.executeQuery();
+			Product pro = new Product();
+			result.next();
+			pro.setName(result.getString("product_name"));
+			pro.setPrice(result.getString("price"));
+			pro.setWorranty(result.getInt("warranty"));
+			pro.setPercentPromo(result.getInt("percent_promo"));
+			pro.setDateAdded(LocalDate.parse(result.getString("date_added")));
+			pro.setProductNumber(result.getString("product_number"));
+			pro.setProductId(result.getLong("product_id"));
+			pro.setTradeMark(getTradeMark(pro.getProductId()));
+			pro.setImageUrl(result.getString("image_url"));
+			ArrayList<Characteristics> characteristics = CharacterisicsDAO.getInstance()
+					.getProducsCharacteristics(pro.getProductId());
+			pro.setCharacteristics(characteristics);
+			pro.setCategory(CategoryDAO.getInstance().getProductsCategory(pro.getProductId()));
+			return pro;
 	}
 
 	public String getTradeMark(long id) throws SQLException {
@@ -86,33 +88,42 @@ public class ProductDAO {
 
 	public void insertNewProduct(Product p) throws SQLException {
 		// inserts Product into product table:
-		int tradeMarkId = getTradeMarkId(p.getTradeMark());
 		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement(
-				"INSERT INTO technomarket.product (trade_mark_id, credit_id, product_name, price, warranty, percent_promo, date_added, product_number, image_url) "
-						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
-				Statement.RETURN_GENERATED_KEYS);
-		ps.setInt(1, tradeMarkId);
-		ps.setString(2, null);
-		ps.setString(3, p.getName());
-		ps.setBigDecimal(4, p.getPrice());
-		ps.setInt(5, p.getWorranty());
-		ps.setInt(6, p.getPercentPromo());
-		ps.setString(7, LocalDate.now().toString());
-		ps.setString(8, p.getProductNumber());
-		ps.setString(9, p.getImageUrl());
-		ps.executeUpdate();
-		ResultSet rs = ps.getGeneratedKeys();
-		rs.next();
-		p.setProductId(rs.getLong(1));
+		con.setAutoCommit(false);
+		try {
+			int tradeMarkId = getTradeMarkId(p.getTradeMark());
+			PreparedStatement ps = con.prepareStatement(
+					"INSERT INTO technomarket.product (trade_mark_id, credit_id, product_name, price, warranty, percent_promo, date_added, product_number, image_url) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
+					Statement.RETURN_GENERATED_KEYS);
+			ps.setInt(1, tradeMarkId);
+			ps.setString(2, null);
+			ps.setString(3, p.getName());
+			ps.setBigDecimal(4, p.getPrice());
+			ps.setInt(5, p.getWorranty());
+			ps.setInt(6, p.getPercentPromo());
+			ps.setString(7, LocalDate.now().toString());
+			ps.setString(8, p.getProductNumber());
+			ps.setString(9, p.getImageUrl());
+			ps.executeUpdate();
+			ResultSet rs = ps.getGeneratedKeys();
+			rs.next();
+			p.setProductId(rs.getLong(1));
 
-		// insert Product and its Category into product_has_category table:
-		insertProductIntoProductHasCategory(p);
+			// insert Product and its Category into product_has_category table:
+			insertProductIntoProductHasCategory(p);
 
-		// insert new row in characteristics table with the product id and its
-		// characteristics name and type:
-		insertProductIntoCharacteristics(p);
-
+			// insert new row in characteristics table with the product id and
+			// its
+			// characteristics name and type:
+			insertProductIntoCharacteristics(p);
+			con.commit();
+		} catch (SQLException e) {
+			con.rollback();
+			throw new SQLException();
+		} finally {
+			con.setAutoCommit(true);
+		}
 	}
 
 	private void insertProductIntoCharacteristics(Product p) throws SQLException {
@@ -137,35 +148,47 @@ public class ProductDAO {
 
 	public void removeProduct(Product p) throws SQLException {
 		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps1 = con.prepareStatement("DELETE FROM technomarket.product WHERE product_id = ?",
-				Statement.RETURN_GENERATED_KEYS);
-		ps1.setLong(1, p.getProductId());
-		ps1.executeUpdate();
+		con.setAutoCommit(false);
+		try {
+			PreparedStatement ps1 = con.prepareStatement("DELETE FROM technomarket.product WHERE product_id = ?",
+					Statement.RETURN_GENERATED_KEYS);
+			ps1.setLong(1, p.getProductId());
+			ps1.executeUpdate();
 
-		PreparedStatement ps2 = con.prepareStatement("DELETE FROM technomarket.order_has_product WHERE product_id = ?",
-				Statement.RETURN_GENERATED_KEYS);
-		ps2.setLong(1, p.getProductId());
-		ps2.executeUpdate();
+			PreparedStatement ps2 = con.prepareStatement(
+					"DELETE FROM technomarket.order_has_product WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
+			ps2.setLong(1, p.getProductId());
+			ps2.executeUpdate();
 
-		PreparedStatement ps3 = con.prepareStatement(
-				"DELETE FROM technomarket.product_has_category WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
-		ps3.setLong(1, p.getProductId());
-		ps3.executeUpdate();
+			PreparedStatement ps3 = con.prepareStatement(
+					"DELETE FROM technomarket.product_has_category WHERE product_id = ?",
+					Statement.RETURN_GENERATED_KEYS);
+			ps3.setLong(1, p.getProductId());
+			ps3.executeUpdate();
 
-		PreparedStatement ps4 = con.prepareStatement("DELETE FROM technomarket.store_has_product WHERE product_id = ?",
-				Statement.RETURN_GENERATED_KEYS);
-		ps4.setLong(1, p.getProductId());
-		ps4.executeUpdate();
+			PreparedStatement ps4 = con.prepareStatement(
+					"DELETE FROM technomarket.store_has_product WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
+			ps4.setLong(1, p.getProductId());
+			ps4.executeUpdate();
 
-		PreparedStatement ps5 = con.prepareStatement("DELETE FROM technomarket.user_has_favourite WHERE product_id = ?",
-				Statement.RETURN_GENERATED_KEYS);
-		ps5.setLong(1, p.getProductId());
-		ps5.executeUpdate();
+			PreparedStatement ps5 = con.prepareStatement(
+					"DELETE FROM technomarket.user_has_favourite WHERE product_id = ?",
+					Statement.RETURN_GENERATED_KEYS);
+			ps5.setLong(1, p.getProductId());
+			ps5.executeUpdate();
 
-		PreparedStatement ps6 = con.prepareStatement("DELETE FROM technomarket.characteristics WHERE product_id = ?",
-				Statement.RETURN_GENERATED_KEYS);
-		ps6.setLong(1, p.getProductId());
-		ps6.executeUpdate();
+			PreparedStatement ps6 = con.prepareStatement(
+					"DELETE FROM technomarket.characteristics WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
+			ps6.setLong(1, p.getProductId());
+			ps6.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			con.rollback();
+			throw new SQLException();
+		} finally {
+			con.setAutoCommit(true);
+		}
+
 	}
 
 	// Search product by name;
@@ -285,8 +308,8 @@ public class ProductDAO {
 		PreparedStatement statement = this.connection.prepareStatement(
 				"SELECT product.product_id, product.product_name, product.price, product.product_number"
 						+ ",trade_marks.trade_mark_name , product.warranty, product.percent_promo"
-						+ "FROM technomarket.product JOIN technomarket.trade_marks on(product.trade_mark_id = trade_marks.trade_mark_id)"
-						+ "WHERE product.price" + "between ? and ?");
+						+ "FROM technomarket.product JOIN technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id)"
+						+ "WHERE product.price between ? and ?");
 		statement.setString(1, fromPrice);
 		statement.setString(2, toPrice);
 		ResultSet result = statement.executeQuery();
@@ -311,14 +334,14 @@ public class ProductDAO {
 		LinkedHashSet<Product> products = new LinkedHashSet<>();
 		this.connection = DBManager.getInstance().getConnections();
 		PreparedStatement statement = this.connection.prepareStatement(
-				"select product.product_id, product.product_name, product.price, product.product_number,"
+				"SELECT product.product_id, product.product_name, product.price, product.product_number,"
 						+ "trade_marks.trade_mark_name , product.warranty, product.percent_promo , categories.categoy_name"
-						+ "from technomarket.product join technomarket.trade_marks on(product.trade_mark_id = trade_marks.trade_mark_id)"
-						+ "join technomarket.categories on(product.credit_id = categories.category_id)"
-						+ "where categoy_name = 'Home'");
+						+ "FROM technomarket.product join technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id)"
+						+ "JOIN technomarket.categories ON(product.credit_id = categories.category_id)"
+						+ "WHERE categoy_name LIKE 'Home'");
 		ResultSet result = statement.executeQuery();
 		Product product = null;
-		while(result.next()){
+		while (result.next()) {
 			product = new Product();
 			product.setProductId(result.getLong(1));
 			product.setName(result.getString(2));
@@ -329,7 +352,6 @@ public class ProductDAO {
 			product.setPercentPromo(result.getInt(7));
 			products.add(product);
 		}
-		
 
 		return products;
 	}
