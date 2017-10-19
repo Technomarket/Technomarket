@@ -35,7 +35,7 @@ public class User {
 
 	}
 
-	public User(String firstName, String lastName, String email, String password, String gender, LocalDate birthDate, boolean isAbonat) throws InvalidUserDataException {
+	public User(String firstName, String lastName, String email, String password, String gender, LocalDate birthDate, boolean isAbonat, boolean isAdmin, boolean isBanned) throws InvalidUserDataException {
 		if (!correctDateForNameOfUser(firstName, lastName)) {
 			throw new InvalidUserDataException();
 		} else {
@@ -60,9 +60,9 @@ public class User {
 		}
 
 		this.birthDate = birthDate;
-		this.isAdmin = false;
+		this.isAdmin = isAdmin;
 		this.isAbonat = isAbonat;
-		this.isBanned = false;
+		this.isBanned = isBanned;
 		this.favourites = new LinkedHashSet<>();
 		this.basket = new LinkedHashMap<>();
 		this.orders = new LinkedHashSet<>();
