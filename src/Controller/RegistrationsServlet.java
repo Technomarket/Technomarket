@@ -25,25 +25,20 @@ public class RegistrationsServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			System.out.println(request.getParameter("firstName"));
-			System.out.println(request.getParameter("lastName"));
-			System.out.println(request.getParameter("email"));
-			System.out.println(request.getParameter("password"));
-			System.out.println(request.getParameter("gender"));
-			System.out.println(request.getParameter("day")+request.getParameter("moth")+request.getParameter("year"));
 			User user = new User(request.getParameter("firstName"),
 					request.getParameter("lastName"),
 					request.getParameter("email"),
 					request.getParameter("password"),
 					request.getParameter("gender"),
-					LocalDate.now(),
+					LocalDate.parse(request.getParameter("bday")),
 					request.getParameter("abonat").equals("1")? true: false, false, false);
 			try {
 				UserDAO.getInstance().insertUser(user);
-				request.getSession().setAttribute("user", user);
+				request.getSession().setAttribute("login", true);
 				request.getRequestDispatcher("mainPage.jsp").forward(request, response);
 			} catch (SQLException e) {
 				request.getRequestDispatcher("errorPage.jsp").forward(request, response);
+				e.printStackTrace();
 				System.out.println("SQL Exception");
 			} catch (EmailAlreadyInUseException e) {
 				request.setAttribute("invalidEmailAddres", "Email addres is exist");

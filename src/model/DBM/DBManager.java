@@ -14,7 +14,7 @@ public class DBManager {
 	private static final String DB_PORT = "3306";
 	private static final String DB_NAME = "technomarket";
 	private static final String DB_USERNAME = "root";
-	private static final String DB_PASSWORD = "44237899a";
+	private static final String DB_PASSWORD ="1234";
 	private static final String URL = "jdbc:mysql://"+DB_IP+":"+DB_PORT+"/"+DB_NAME;
 	
 	private DBManager() {

@@ -36,20 +36,13 @@ public class LoginServlet extends HttpServlet {
 			if(exist){
 				try {
 					User user = (User)UserDAO.getInstance().getUser(userName);
-					request.getSession().setAttribute("user", user);
+					request.getSession().setAttribute("login", true);
 					request.getRequestDispatcher("mainPage.jsp").forward(request, response);
 					
-					
-//					 ServletContext application = getServletConfig().getServletContext();
-//					 synchronized (application) {
-//					 if(application.getAttribute("products") == null){
-//					 HashSet<Product> products = ProductDao.getInstance().getAllProducts();
-//					 application.setAttribute("products", products);
-		
 				} catch (InvalidCharacteristicsDataException e) {
-					e.printStackTrace();
+					System.out.println("Invalid date for characteristics in order!");
 				} catch (InvalidCategoryDataException e) {
-					e.printStackTrace();
+					System.out.println("Invalid date for product category!");
 				}
 			}else{
 				request.setAttribute("error", "user does not exist");

@@ -29,6 +29,7 @@ public class ForgottenPasswordServlet extends HttpServlet {
 				req.getRequestDispatcher("forgotten_password.jsp").forward(req, resp);
 			}
 		} catch (SQLException e) {
+			req.getRequestDispatcher("errorPage.jsp");
 			System.out.println("Ops SQL Exceptions");
 		}
 		

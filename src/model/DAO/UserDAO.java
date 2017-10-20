@@ -42,7 +42,7 @@ public class UserDAO {
 		if (checkIfUserWithSameEmailExist(user.getEmail())) {
 			throw new EmailAlreadyInUseException();
 		} else {
-			String query = "INSERT INTO technomarket.users ( first_name, last_name, email, password, gender,date_of_birth, isAdmin,isAbonat,isBAnned)VALUES(?,?,?,?,?,?,?,?);";
+			String query = "INSERT INTO technomarket.users ( first_name, last_name, email, password, gender,date_of_birth, isAdmin,isAbonat,isBAnned)VALUES(?,?,?,?,?,?,?,?,?);";
 			this.connection = DBManager.getInstance().getConnections();
 			java.sql.PreparedStatement statement = this.connection.prepareStatement(query,
 					Statement.RETURN_GENERATED_KEYS);
@@ -50,10 +50,11 @@ public class UserDAO {
 			statement.setString(2, user.getLastName());
 			statement.setString(3, user.getEmail());
 			statement.setString(4, Encrypter.encrypt(user.getPassword()));
-			statement.setString(5, user.getBirthDate().toString());
-			statement.setString(6, "" + user.getIsAdmin());
-			statement.setString(7, "" + user.getIsAbonat());
-			statement.setString(8, "" + user.getIsBanned());
+			statement.setString(5, user.getGender());
+			statement.setString(6, user.getBirthDate().toString());
+			statement.setString(7, "" + (user.getIsAdmin() ? 1:0));
+			statement.setString(8, "" + (user.getIsAbonat() ? 1:0));
+			statement.setString(9, "" + (user.getIsBanned() ? 1:0));
 			statement.executeUpdate();
 			ResultSet resutSet = statement.getGeneratedKeys();
 			// Взимаме от базата идто и го слагаме на обекта;
@@ -93,13 +94,12 @@ public class UserDAO {
 	// метод!
 	public User getUser(String userName)
 			throws SQLException, InvalidCharacteristicsDataException, InvalidCategoryDataException {
-		String getQuery = "SELECT * FROM technomarket.users WHERE email = ?";
 		User user = new User();
-		java.sql.PreparedStatement statement = this.connection.prepareStatement(getQuery);
+		PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM technomarket.users WHERE email = ?");
 		statement.setString(1, userName);
 		ResultSet result = statement.executeQuery();
 		result.next();
-		user.setId(result.getLong("id"));
+		user.setId(result.getLong("user_id"));
 		user.setFirstName(result.getString("first_name"));
 		user.setLastName(result.getString("last_name"));
 		user.setEmail(result.getString("email"));
@@ -109,7 +109,7 @@ public class UserDAO {
 		user.setAdmin(result.getBoolean("isAdmin"));
 		user.setAbonat(result.getBoolean("isAbonat"));
 		user.setBanned(result.getBoolean("isBanned"));
-		LinkedHashSet<Order> orders = OrderDAO.getInstance().getOrdersForUser(result.getLong("id"));
+		LinkedHashSet<Order> orders = OrderDAO.getInstance().getOrdersForUser(user.getUserId());
 		user.setOrders(orders);
 		return user;
 	}
