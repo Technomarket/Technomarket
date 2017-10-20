@@ -25,6 +25,11 @@ public class RegistrationsServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+			
+			if(!request.getParameter("password").equals(request.getParameter("password1"))){
+				request.setAttribute("invalidPassword", "Passwords are not the same ");
+				request.getRequestDispatcher("register.jsp");
+			}
 			User user = new User(request.getParameter("firstName"),
 					request.getParameter("lastName"),
 					request.getParameter("email"),

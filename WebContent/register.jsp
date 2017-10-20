@@ -9,9 +9,14 @@ pageEncoding="UTF-8"%>
 </head>
 <body>
 <h1>Регистрация</h1>
-<c:if test="${ requestScope.invalidDateЕrror != null }">
+        <c:if test="${ requestScope.invalidDateЕrror != null }">
 			<div>
 			<p>Данните за регистрация не са валидни!</p>
+			</div>
+		</c:if>
+		 <c:if test="${ requestScope.invalidPassword != null }">
+			<div>
+			<p>Паролите не съвпадат!</p>
 			</div>
 		</c:if>
 		<c:if test="${ requestScope.invalidEmailAddres != null }">
@@ -24,7 +29,7 @@ pageEncoding="UTF-8"%>
 Фамилия* <input type = "text" name = "lastName" required><br>
 Имайл* <input type = "email" name = "email" required><br>
 Парола* <input type = "password" name = "password" required></input><br>
-Парола(отново)* <input type = "password" name = "password" required></input><br>
+Парола(отново)* <input type = "password" name = "password1" required></input><br>
 Пол* <input type = "radio" name = "gender" value = "male">Мъж
 <input type = "radio" name = "gender" value = "female">Жена<br>
 Дата на раждане* <input type="date" name="bday" required><br>

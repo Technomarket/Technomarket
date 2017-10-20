@@ -28,22 +28,24 @@ public class CategoryDAO {
 	}
 
 	public void insertProductIntoProductHasCategory(Product p) throws SQLException {
-		Connection con = DBManager.getInstance().getConnections();
-		con.setAutoCommit(false);
+		this.connection = DBManager.getInstance().getConnections();
+		this.connection.setAutoCommit(false);
 		try {
 			long categoryId = getCategoryId(p.getCategory());
-			PreparedStatement ps = con.prepareStatement(
+			PreparedStatement ps = this.connection.prepareStatement(
 					"INSERT INTO technomarket.product_has_category (category_id, product_id) VALUES (?, ?);",
 					Statement.RETURN_GENERATED_KEYS);
 			ps.setLong(1, categoryId);
 			ps.setLong(2, p.getProductId());
 			ps.executeUpdate();
-			con.commit();
+			this.connection.commit();
+			ps.close();
 		} catch (SQLException e) {
-			con.rollback();
+			this.connection.rollback();
 			throw new SQLException();
 		} finally {
-			con.setAutoCommit(true);
+			this.connection.setAutoCommit(true);
+			this.connection.close();
 		}
 	}
 

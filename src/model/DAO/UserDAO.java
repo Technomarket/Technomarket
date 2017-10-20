@@ -94,6 +94,7 @@ public class UserDAO {
 	// метод!
 	public User getUser(String userName)
 			throws SQLException, InvalidCharacteristicsDataException, InvalidCategoryDataException {
+		this.connection = DBManager.getInstance().getConnections();
 		User user = new User();
 		PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM technomarket.users WHERE email = ?");
 		statement.setString(1, userName);
@@ -111,20 +112,23 @@ public class UserDAO {
 		user.setBanned(result.getBoolean("isBanned"));
 		LinkedHashSet<Order> orders = OrderDAO.getInstance().getOrdersForUser(user.getUserId());
 		user.setOrders(orders);
+		result.close();
+		statement.close();
+		this.connection.close();
 		return user;
 	}
 
 	// Checks if the email exist in DB in connection with user. Used when password is forgotten or to check is such user is already registrated:
 	public boolean checkIfUserWithSameEmailExist(String email) throws SQLException {
-		String getQuery = "SELECT users.email FROM technomarket.users WHERE users.email = ?";
 		this.connection = DBManager.getInstance().getConnections();
-		PreparedStatement statement = this.connection.prepareStatement(getQuery);
+		PreparedStatement statement = this.connection.prepareStatement("SELECT users.email FROM technomarket.users WHERE users.email = ?");
 		statement.setString(1, email);
 		ResultSet result = statement.executeQuery();
-		if (result.next()) {
-			return true;
-		}
-		return false;
+		boolean exist = result.next();
+		statement.close();
+		this.connection.close();
+		return exist;
+		
 	}
 
 	// user confirming his order:
@@ -137,33 +141,35 @@ public class UserDAO {
 
 	// Adding favourite product to user account:
 	public void addInFavorite(User user, Product product) throws SQLException {
-		String query = "INSER INTO technomarket.users_has_favourite (user_id, product_id) VALUES (?, ?)";
 		this.connection = DBManager.getInstance().getConnections();
-		java.sql.PreparedStatement statement = this.connection.prepareStatement(query);
+		PreparedStatement statement = this.connection.prepareStatement("INSER INTO technomarket.users_has_favourite (user_id, product_id) VALUES (?, ?)");
 		statement.setLong(1, user.getUserId());
 		statement.setLong(2, product.getProductId());
 		statement.executeQuery();
+		statement.close();
+		this.connection.close();
 	}
 
 	// Remove favourite product:
 	public void removeFavouriteProduct(User u, Product p) throws SQLException {
-		String query = "DELETE FROM technomarket.user_has_favouite WHERE user_id = ? AND product_id = ?";
 		this.connection = DBManager.getInstance().getConnections();
-		java.sql.PreparedStatement statment = this.connection.prepareStatement(query);
+		PreparedStatement statment = this.connection.prepareStatement("DELETE FROM technomarket.user_has_favouite WHERE user_id = ? AND product_id = ?");
 		statment.setLong(1, u.getUserId());
 		statment.setLong(2, p.getProductId());
 		statment.executeQuery();
+		statment.close();
+		this.connection.close();
 	}
 
 	// Listing all favourite products:
-	public void viewFavourite(User user) throws SQLException {
+	public 	LinkedHashSet<Product> viewFavourite(User user) throws SQLException {
 		String query = "SELECT * FROM technomarket.product AS p JOIN technomarket.user_has_favourite AS f ON(p.product_id = f.product_id)WHERE f.user_id ="
 				+ user.getUserId();
 		this.connection = DBManager.getInstance().getConnections();
-		java.sql.PreparedStatement statment = this.connection.prepareStatement(query);
+		PreparedStatement statment = this.connection.prepareStatement(query);
 		ResultSet result = statment.executeQuery();
 		Product product = null;
-		ArrayList<Product> products = new ArrayList<>();
+		LinkedHashSet<Product> products = new LinkedHashSet<>();
 		while (result.next()) {
 			product = new Product();
 			product.setName(result.getString("product_name"));
@@ -176,10 +182,9 @@ public class UserDAO {
 			product.setTradeMark(ProductDAO.getInstance().getTradeMark(product.getProductId()));
 			products.add(product);
 		}
-		System.out.println("Favourute from User");
-		for (int i = 0; i < products.size(); i++) {
-			System.out.println(products.get(i));
-		}
+		this.connection.close();
+		statment.close();
+		return products;
 	}
 
 	// user statuses, used by admins:
@@ -190,12 +195,14 @@ public class UserDAO {
 		} else if (!u.getIsAdmin() && !isAdmin) {
 			throw new IlligalAdminActionException();
 		} else {
-			Connection con = DBManager.getInstance().getConnections();
-			PreparedStatement ps = con.prepareStatement("UPDATE technomarket.users SET isAdmin = ? WHERE user_id = ?",
+			this.connection = DBManager.getInstance().getConnections();
+			PreparedStatement ps = this.connection.prepareStatement("UPDATE technomarket.users SET isAdmin = ? WHERE user_id = ?",
 					Statement.RETURN_GENERATED_KEYS);
 			ps.setBoolean(1, isAdmin);
 			ps.setLong(2, u.getUserId());
 			ps.executeUpdate();
+			this.connection.close();
+			ps.close();
 		}
 	}
 
@@ -205,12 +212,14 @@ public class UserDAO {
 		} else if (!u.getIsBanned() && !isBanned) {
 			throw new IlligalAdminActionException();
 		} else {
-			Connection con = DBManager.getInstance().getConnections();
-			PreparedStatement ps = con.prepareStatement("UPDATE technomarket.users SET isBanned = ? WHERE user_id = ?",
+			this.connection = DBManager.getInstance().getConnections();
+			PreparedStatement ps = this.connection.prepareStatement("UPDATE technomarket.users SET isBanned = ? WHERE user_id = ?",
 					Statement.RETURN_GENERATED_KEYS);
 			ps.setBoolean(1, isBanned);
 			ps.setLong(2, u.getUserId());
 			ps.executeUpdate();
+			this.connection.close();
+			ps.close();
 		}
 	}
 

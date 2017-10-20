@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.sun.org.apache.regexp.internal.REUtil;
+
 import model.Category;
 import model.Characteristics;
 import model.Product;
@@ -61,6 +63,9 @@ public class ProductDAO {
 					.getProducsCharacteristics(pro.getProductId());
 			pro.setCharacteristics(characteristics);
 			pro.setCategory(CategoryDAO.getInstance().getProductsCategory(pro.getProductId()));
+			result.close();
+			statment.close();
+			this.connection.close();
 			return pro;
 	}
 
@@ -71,28 +76,33 @@ public class ProductDAO {
 		statement.setLong(1, id);
 		ResultSet resut = statement.executeQuery();
 		resut.next();
+		resut.close();
+		statement.close();
+		this.connection.close();
 		return resut.getString("trade_mark_name");
 	}
 
 	public void setPromoPercent(Product p, int percent) throws SQLException {
-		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement(
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement ps = this.connection.prepareStatement(
 				"UPDATE technomarket.product SET percent_promo = ? WHERE product_id = ?",
 				Statement.RETURN_GENERATED_KEYS);
 		ps.setInt(1, percent);
 		ps.setLong(2, p.getProductId());
 		ps.executeUpdate();
+		ps.close();
+		this.connection.close();
 	}
 
 	// insert product module:
 
 	public void insertNewProduct(Product p) throws SQLException {
 		// inserts Product into product table:
-		Connection con = DBManager.getInstance().getConnections();
-		con.setAutoCommit(false);
+		this.connection = DBManager.getInstance().getConnections();
+		this.connection.setAutoCommit(false);
 		try {
 			int tradeMarkId = getTradeMarkId(p.getTradeMark());
-			PreparedStatement ps = con.prepareStatement(
+			PreparedStatement ps = this.connection.prepareStatement(
 					"INSERT INTO technomarket.product (trade_mark_id, credit_id, product_name, price, warranty, percent_promo, date_added, product_number, image_url) "
 							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
 					Statement.RETURN_GENERATED_KEYS);
@@ -117,12 +127,15 @@ public class ProductDAO {
 			// its
 			// characteristics name and type:
 			insertProductIntoCharacteristics(p);
-			con.commit();
+			this.connection.commit();
+			rs.close();
+			ps.close();
 		} catch (SQLException e) {
-			con.rollback();
+			this.connection.rollback();
 			throw new SQLException();
 		} finally {
-			con.setAutoCommit(true);
+			this.connection.setAutoCommit(true);
+			this.connection.close();
 		}
 	}
 
@@ -135,58 +148,67 @@ public class ProductDAO {
 	}
 
 	private int getTradeMarkId(String tradeMark) throws SQLException {
-		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement ps = this.connection
 				.prepareStatement("SELECT trade_mark_id FROM technomarket.trade_marks WHERE trade_mark_name LIKE '?';");
 		ps.setString(1, tradeMark);
 		ResultSet rs = ps.executeQuery();
 		rs.next();
+		rs.close();
+		ps.close();
+		this.connection.close();
 		return rs.getInt("trade_mark_id");
 	}
 
 	// remove product module:
 
 	public void removeProduct(Product p) throws SQLException {
-		Connection con = DBManager.getInstance().getConnections();
-		con.setAutoCommit(false);
+		this.connection = DBManager.getInstance().getConnections();
+		this.connection.setAutoCommit(false);
 		try {
-			PreparedStatement ps1 = con.prepareStatement("DELETE FROM technomarket.product WHERE product_id = ?",
+			PreparedStatement ps1 = this.connection.prepareStatement("DELETE FROM technomarket.product WHERE product_id = ?",
 					Statement.RETURN_GENERATED_KEYS);
 			ps1.setLong(1, p.getProductId());
 			ps1.executeUpdate();
 
-			PreparedStatement ps2 = con.prepareStatement(
+			PreparedStatement ps2 = this.connection.prepareStatement(
 					"DELETE FROM technomarket.order_has_product WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
 			ps2.setLong(1, p.getProductId());
 			ps2.executeUpdate();
 
-			PreparedStatement ps3 = con.prepareStatement(
+			PreparedStatement ps3 = this.connection.prepareStatement(
 					"DELETE FROM technomarket.product_has_category WHERE product_id = ?",
 					Statement.RETURN_GENERATED_KEYS);
 			ps3.setLong(1, p.getProductId());
 			ps3.executeUpdate();
 
-			PreparedStatement ps4 = con.prepareStatement(
+			PreparedStatement ps4 = this.connection.prepareStatement(
 					"DELETE FROM technomarket.store_has_product WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
 			ps4.setLong(1, p.getProductId());
 			ps4.executeUpdate();
 
-			PreparedStatement ps5 = con.prepareStatement(
+			PreparedStatement ps5 = this.connection.prepareStatement(
 					"DELETE FROM technomarket.user_has_favourite WHERE product_id = ?",
 					Statement.RETURN_GENERATED_KEYS);
 			ps5.setLong(1, p.getProductId());
 			ps5.executeUpdate();
 
-			PreparedStatement ps6 = con.prepareStatement(
+			PreparedStatement ps6 = this.connection.prepareStatement(
 					"DELETE FROM technomarket.characteristics WHERE product_id = ?", Statement.RETURN_GENERATED_KEYS);
 			ps6.setLong(1, p.getProductId());
 			ps6.executeUpdate();
-			con.commit();
+			this.connection.commit();
+			ps1.close();
+			ps2.close();
+			ps3.close();
+			ps4.close();
+			ps5.close();
 		} catch (SQLException e) {
-			con.rollback();
+			this.connection.rollback();
 			throw new SQLException();
 		} finally {
-			con.setAutoCommit(true);
+			this.connection.setAutoCommit(true);
+			this.connection.close();
 		}
 
 	}
@@ -208,6 +230,8 @@ public class ProductDAO {
 		product.setPercentPromo(result.getInt(6));
 		product.setDateAdded(LocalDate.parse(result.getString(7)));
 		product.setProductNumber(result.getString(8));
+		statment.close();
+		this.connection.close();
 		return product;
 	}
 
@@ -244,6 +268,9 @@ public class ProductDAO {
 			pro.setProductNumber(result.getString(8));
 			products.add(pro);
 		}
+		result.close();
+		statement.close();
+		this.connection.close();
 		return products;
 
 	}
@@ -269,6 +296,9 @@ public class ProductDAO {
 			product.setImageUrl(result.getString(9));
 			products.add(product);
 		}
+		result.close();
+		statement.close();
+		this.connection.close();
 		return products;
 	}
 
@@ -294,6 +324,9 @@ public class ProductDAO {
 			product.setImageUrl(result.getString(9));
 			products.add(product);
 		}
+		result.close();
+		statement.close();
+		this.connection.close();
 		return products;
 	}
 
@@ -325,7 +358,9 @@ public class ProductDAO {
 			product.setPercentPromo(result.getInt(7));
 			products.add(product);
 		}
-
+		result.close();
+		statement.close();
+		this.connection.close();
 		return products;
 	}
 
@@ -352,7 +387,9 @@ public class ProductDAO {
 			product.setPercentPromo(result.getInt(7));
 			products.add(product);
 		}
-
+		result.close();
+		statement.close();
+		this.connection.close();
 		return products;
 	}
 

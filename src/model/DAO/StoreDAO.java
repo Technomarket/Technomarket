@@ -35,8 +35,8 @@ public class StoreDAO {
 	
 	public HashSet<Store> getStoresPerCity(String city) throws SQLException, InvalidStoreDataException{
 		HashSet<Store> stores = new HashSet<>();
-		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement("SELECT * FROM technomarket.stores WHERE city LIKE '?';");
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement ps = this.connection.prepareStatement("SELECT * FROM technomarket.stores WHERE city LIKE '?';");
 		ps.setString(1, city);
 		ps.executeUpdate();
 		ResultSet rs = ps.executeQuery();
@@ -51,6 +51,8 @@ public class StoreDAO {
 			s.setStoreImageUrl(rs.getString("store_image_url"));
 			stores.add(s);
 		}
+		ps.close();
+		this.connection.close();
 		return stores;
 		
 	}
@@ -58,25 +60,29 @@ public class StoreDAO {
 	//change quantity of product in store with int change, where int change can be positive or negative:
 	
 	public void changeQuantityInStore(Store s, Product p, int change) throws SQLException{
-		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement("UPDATE technomarket.store_has_product SET amount=? WHERE store_id = ? AND product_id = ?;", Statement.RETURN_GENERATED_KEYS);
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement ps = this.connection.prepareStatement("UPDATE technomarket.store_has_product SET amount=? WHERE store_id = ? AND product_id = ?;", Statement.RETURN_GENERATED_KEYS);
 		ps.setInt(1, change);
 		ps.setLong(2, s.getStoreId());
 		ps.setLong(3, p.getProductId());
 		ps.executeUpdate();
+		ps.close();
+		this.connection.close();
 	}
 
 	//returns status of product amount in specific store:
 	
 	public Status checkQuantity(Store s, Product p) throws SQLException{
-		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement("SELECT amount FROM technomarket.store_has_product WHERE product_id = ? AND store_id = ?;");
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement ps = this.connection.prepareStatement("SELECT amount FROM technomarket.store_has_product WHERE product_id = ? AND store_id = ?;");
 		ps.setLong(1, p.getProductId());
 		ps.setLong(2, s.getStoreId());
 		ResultSet rs = ps.executeQuery();
 		rs.next();
 		int amount = rs.getInt("amount");
-		
+		ps.close();
+		this.connection.close();
+		rs.close();
 		if(amount == 0){
 			return Status.NO_STATUS;
 		}else if(amount > 0 && amount < 10){
@@ -86,22 +92,25 @@ public class StoreDAO {
 		}else{
 			return Status.GREEN_STATUS;
 		}
+		
 	}
 	
 	//Admin panel in Stores: 
 	
 	public void insertProductInStore(Store s, Product p, int amount) throws SQLException{
-		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement("INSERT INTO technomarket.store_has_product (store_id, product_id, amount) VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement ps = this.connection.prepareStatement("INSERT INTO technomarket.store_has_product (store_id, product_id, amount) VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
 		ps.setLong(1, s.getStoreId());
 		ps.setLong(2, p.getProductId());
 		ps.setInt(3, amount);
 		ps.executeUpdate();
+		ps.close();
+		this.connection.close();
 	}
 
 	public void insertNewStore(Store s) throws SQLException {
-		Connection con = DBManager.getInstance().getConnections();
-		PreparedStatement ps = con.prepareStatement("INSERT INTO technomarket.stores (city, address, phone, working_time, email, gps, store_image_url) VALUES (?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement ps = this.connection.prepareStatement("INSERT INTO technomarket.stores (city, address, phone, working_time, email, gps, store_image_url) VALUES (?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
 		ps.setString(1, s.getAddres().getCity());
 		ps.setString(2, s.getAddres().getAddres());
 		ps.setString(3, s.getPhoneNumber());
@@ -113,5 +122,8 @@ public class StoreDAO {
 		ResultSet rs = ps.getGeneratedKeys();
 		rs.next();
 		s.setStoreId(rs.getLong(1));
+		ps.close();
+		rs.close();
+		this.connection.close();
 	}
 }

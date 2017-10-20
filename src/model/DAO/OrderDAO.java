@@ -27,7 +27,7 @@ import model.exceptions.InvalidCategoryDataException;
 import model.exceptions.InvalidCharacteristicsDataException;
 
 public class OrderDAO {
-	
+	//Trqbva da zatrobvim vsichki konekcii i statement i result set vuv creditDAO, CharacterisDAO, CategoryDAO, AdminDAO
 	private static OrderDAO orderDAO;
 	private Connection connection;
 
