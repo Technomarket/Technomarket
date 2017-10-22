@@ -5,6 +5,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<script type="text/javascript" src="css_and_js/scripts/common_scripts.js"></script>
 		<title>Insert title here</title>
 	</head>
 	<body>
@@ -23,6 +24,6 @@
 			<input type="submit" value="Вход"><br>
 		</form>
 		<h1>Нямаш профил?</h1>
-		<button><a href="register.jsp">Регистрирай се</a></button>
+		<button onclick="visitRegister();">Регистрирай се</button>
 	</body>
 </html>
