@@ -11,57 +11,57 @@
 		<nav>
 			<ul>
 				<li>
-					<a href="../contacts/contacts.jsp">
+					<a href="contacts.jsp">
 						<img src="D:\technomarket_images\buttons\contacts.jpg" alt="contacts">
 					</a>
 				</li>
 				<li>
-					<a href="product_filter?type=home">
+					<a href="../ProductFIlterServlet?type=home">
 						<img src="D:\technomarket_images\buttons\home.jpg" alt="home">
 					</a>
 				</li>
 				<li>
-					<a href="product_filter?type=apple">
+					<a href="../ProductFIlterServlet?type=apple">
 						<img src="D:\technomarket_images\buttons\apple.jpg" alt="apple">
 					</a>
 				</li>
 				<li>
-					<a href="product_filter?type=promo">
+					<a href="../ProductFIlterServlet?type=promo">
 						<img src="D:\technomarket_images\buttons\prom.jpg" alt="promo">
 					</a>
 				</li>
 				<li>
-					<a href="../services/services.jsp">
+					<a href="services.jsp">
 						<img src="D:\technomarket_images\buttons\services.jpg" alt="services">
 					</a>
 				</li>
 				<li>
-					<a href="../contacts/stores.jsp">
+					<a href="stores.jsp">
 						<img src="D:\technomarket_images\buttons\stores.jpg" alt="stores">
 					</a>
 				</li>
 			</ul>
 		</nav>
-		<a href="../index.jsp">
+		<a href="index.jsp">
 			<img alt="technomarket_logo" src="D:\technomarket_images\logo\tm-logo.png">
 		</a>
-		<form action="../product_filter" method="get">
-			<input type="search" name="searched_text" placeholder="Търси...">
+		<form action="../ProductFIlterServlet" method="get">
+			<input type="text" name="searched_text" placeholder="Търси...">
 			<input type="submit" id="search_button"><br>
 		</form>
 		<div class="user_dropdown">
   			<button class="drop_head_button"><c:out value = "${sessionScope.user != null ? user.firstName : 'Вход'}"/></button>
   			<div class="dropdown_content">
    				<c:if test="${sessionScope.user == null}">
-					<a href="../login.jsp">Вход</a>
-   			 		<a href="../register.jsp">Регистрация</a>
+					<a href="login.jsp">Вход</a>
+   			 		<a href="register.jsp">Регистрация</a>
 				</c:if>
    				<c:if test="${sessionScope.user != null}">
-					<a href="../user_pages/profile.jsp">Профил</a>
-    				<a href="../user_pages/orders.jsp">Поръчки</a>
-    				<a href="../user_pages/favourites.jsp">Любими</a>
+					<a href="profile.jsp">Профил</a>
+    				<a href="orders.jsp">Поръчки</a>
+    				<a href="favourites.jsp">Любими</a>
     				<c:if test="${sessionScope.user.isAdmin == true}">
-						<a href="../user_pages/admin_panel.jsp">Админ панел</a>
+						<a href="admin_panel.jsp">Админ панел</a>
 					</c:if>
 					<form action="../LogoutServlet" method="post">
 						<a id="logout_a">Изход</a>
@@ -70,6 +70,6 @@
 				</c:if>
  			 </div>
 		</div>
-		<button type="button"><c:out value = "${sessionScope.user.getBasketPrice != null ? sessionScope.user.getBasketPrice : '0'}"/></button>
+		<button type="button"><c:out value = "${sessionScope.user.basket != null ? sessionScope.user.getBasketPrice() : '0'}"/></button>
 	</body>
 </html>

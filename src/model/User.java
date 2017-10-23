@@ -80,6 +80,9 @@ public class User {
 	
 	public BigDecimal getBasketPrice(){
 		BigDecimal sum = new BigDecimal(0);
+		if(basket.isEmpty()){
+			return sum;
+		}
 		for (Iterator<Entry<Product, Integer>> iterator = basket.entrySet().iterator(); iterator.hasNext();) {
 			Entry<Product, Integer> product = iterator.next();
 			sum.add(product.getKey().getPrice().multiply(new BigDecimal(product.getValue())));
@@ -176,6 +179,10 @@ public class User {
 	
 	public HashSet<Order> getOrders() {
 		return (HashSet<Order>) Collections.unmodifiableSet(orders);
+	}
+	
+	public LinkedHashMap<Product, Integer> getBasket() {
+		return basket;
 	}
 
 	

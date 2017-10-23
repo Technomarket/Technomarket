@@ -1,4 +1,4 @@
-package controller;
+package Controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,18 +18,18 @@ public class ForgottenPasswordServlet extends HttpServlet {
    
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String email = req.getParameter("username");
+		String email = req.getParameter("view/username");
 		try {
 			boolean exist = UserDAO.getInstance().checkIfUserWithSameEmailExist(email);
 			if(exist){
 				//Send email to email addres
-				req.getRequestDispatcher("email_sent.jsp").forward(req, resp);
+				req.getRequestDispatcher("view/email_sent.jsp").forward(req, resp);
 			}else{
 				req.setAttribute("error", "email not valid");
-				req.getRequestDispatcher("forgotten_password.jsp").forward(req, resp);
+				req.getRequestDispatcher("view/forgotten_password.jsp").forward(req, resp);
 			}
 		} catch (SQLException e) {
-			req.getRequestDispatcher("errorPage.jsp");
+			req.getRequestDispatcher("view/errorPage.jsp");
 			System.out.println("Ops SQL Exceptions");
 		}
 		

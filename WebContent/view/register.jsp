@@ -29,7 +29,7 @@
 			<p>Трябва да приемете условията за да продължите!</p>
 		</div>
 	</c:if>
-	<form action="RegistrationsServlet" method="post">
+	<form action="../RegistrationsServlet" method="post">
 		Име* <input type="text" name="firstName" required><br>
 		Фамилия* <input type="text" name="lastName" required><br>
 		Имайл* <input type="email" name="email" required><br>

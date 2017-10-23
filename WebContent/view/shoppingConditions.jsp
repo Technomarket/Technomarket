@@ -7,7 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-<jsp:include page="../footer_and_header/header.jsp" />
+<jsp:include page="header.jsp" />
 <p><br />
 ВНИМАНИЕ! Внимателно прочетете тези Общи условия, преди да използвате този уеб сайт. Ако използвате този уеб сайт се счита, че приемате и сте съгласни с посочените Общи условия. Ако НЕ ПРИЕМАТЕ тези условия, не използвайте този уеб сайт!</p>
 
@@ -322,6 +322,6 @@ _______________________________________________________________________________<
 <p>Тел. : +359 0700 10 800 / email: online@technomarket.bg / www.technomarket.bg</p>
 
 <p>При възникване на спор, свързан с покупка онлайн можете да се обърнете към съответните органи за <a href="http://www.mi.government.bg/bg/themes/spisak-na-organite-za-alternativno-reshavane-na-potrebitelski-sporove-elektronna-platforma-za-onlain-1608-0.html" target="_blank">алтернативно решаване на спорове (АРС)</a> &nbsp;или да използвате сайта&nbsp;за <a href="https://webgate.ec.europa.eu/odr/main/index.cfm?event=main.home.show&amp;lng=BG">онлайн решаване на спорове (</a><a href="https://webgate.ec.europa.eu/odr/main/index.cfm?event=main.home.show&amp;lng=BG" target="_blank">ОРС</a><a href="https://webgate.ec.europa.eu/odr/main/index.cfm?event=main.home.show&amp;lng=BG">)</a>.</p>
- <jsp:include page="../footer_and_header/footer.jsp" />
+ <jsp:include page="footer.jsp" />
 </body>
 </html>

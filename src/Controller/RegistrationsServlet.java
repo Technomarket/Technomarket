@@ -1,4 +1,4 @@
-package controller;
+package Controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -28,12 +28,12 @@ public class RegistrationsServlet extends HttpServlet {
 			
 			if(!request.getParameter("password").equals(request.getParameter("password1"))){
 				request.setAttribute("invalidPassword", "Passwords are not the same ");
-				request.getRequestDispatcher("register.jsp").forward(request, response);
+				request.getRequestDispatcher("view/register.jsp").forward(request, response);
 				return;
 			}
 			if(request.getParameter("submit") == null){
 				request.setAttribute("unAccepted", "UnAccepted condition");
-				request.getRequestDispatcher("register.jsp").forward(request, response);
+				request.getRequestDispatcher("view/register.jsp").forward(request, response);
 				return;
 			}
 			User user = new User(request.getParameter("firstName"),
@@ -53,12 +53,12 @@ public class RegistrationsServlet extends HttpServlet {
 				System.out.println("SQL Exception");
 			} catch (EmailAlreadyInUseException e) {
 				request.setAttribute("invalidEmailAddres", "Email addres is exist");
-				request.getRequestDispatcher("register.jsp").forward(request, response);
+				request.getRequestDispatcher("view/register.jsp").forward(request, response);
 				
 			}
 		} catch (InvalidUserDataException e) {
 			request.setAttribute("invalidDate≈rror", "Invalid date for user");
-			request.getRequestDispatcher("register.jsp").forward(request, response);
+			request.getRequestDispatcher("view/register.jsp").forward(request, response);
 			
 		}
 		

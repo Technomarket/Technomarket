@@ -16,7 +16,7 @@
 			<p>Невалидно удостоверение за автентикация.</p>
 			</div>
 		</c:if>
-		<form action="LoginServlet" method="post">
+		<form action="../LoginServlet" method="post">
 			Е-мейл <input type="text" name="username"><br>
 			Парола <input type="password" name="password"><br>
 			Запомни ме <input type = "checkbox" name = "remember"> 

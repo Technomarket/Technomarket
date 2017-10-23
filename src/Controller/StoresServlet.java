@@ -20,10 +20,10 @@ public class StoresServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			request.getSession().setAttribute("allNameOfStores", StoreDAO.getInstance().getAllCities());
-			request.getRequestDispatcher("contacts/stores.jsp").forward(request, response);
+			request.getRequestDispatcher("view/stores.jsp").forward(request, response);
 			
 		} catch (SQLException e) {
-			request.getRequestDispatcher("error.jsp").forward(request, response);
+			request.getRequestDispatcher("view/error.jsp").forward(request, response);
 			System.out.println("Sql Exception in storesServlet");
 		}
 	}

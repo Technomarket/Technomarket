@@ -1,4 +1,4 @@
-package controller;
+package Controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -15,9 +15,7 @@ import model.exceptions.EmailAlreadyInUseException;
 import model.exceptions.InvalidCategoryDataException;
 import model.exceptions.InvalidCharacteristicsDataException;
 
-/**
- * Servlet implementation class LoginServet
- */
+
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -37,7 +35,7 @@ public class LoginServlet extends HttpServlet {
 				try {
 					User user = (User)UserDAO.getInstance().getUser(userName);
 					request.getSession().setAttribute("user", user);
-					request.getRequestDispatcher("index.jsp").forward(request, response);
+					request.getRequestDispatcher("view/index.jsp").forward(request, response);
 					
 				} catch (InvalidCharacteristicsDataException e) {
 					System.out.println("Invalid date for characteristics in order!");
@@ -46,7 +44,7 @@ public class LoginServlet extends HttpServlet {
 				}
 			}else{
 				request.setAttribute("error", "user does not exist");
-				request.getRequestDispatcher("login.jsp").forward(request, response);
+				request.getRequestDispatcher("view/login.jsp").forward(request, response);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

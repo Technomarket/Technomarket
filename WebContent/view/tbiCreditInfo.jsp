@@ -7,7 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-<jsp:include page="../footer_and_header/header.jsp" />
+<jsp:include page="header.jsp" />
 <p align="center"><strong><em><u>Процедура - Онлайн кандидатстване</u></em></strong></p>
 
 <p>Основните стъпки в процеса на онлайн кредитиране са следните:</p>
@@ -101,6 +101,6 @@
 <p><strong>10.&nbsp; </strong>При връщане на стоката от Вас в законния 15 дневен срок за онлайн продажбите, Техномаркет България АД &nbsp;уведомява Ти Би Ай Банк ЕАД, за да бъде анулиран договора по надлежния ред.</p>
 
 <p>&nbsp;</p>
-<jsp:include page="../footer_and_header/footer.jsp" />
+<jsp:include page="footer.jsp" />
 </body>
 </html>
