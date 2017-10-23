@@ -28,7 +28,13 @@ public class RegistrationsServlet extends HttpServlet {
 			
 			if(!request.getParameter("password").equals(request.getParameter("password1"))){
 				request.setAttribute("invalidPassword", "Passwords are not the same ");
-				request.getRequestDispatcher("register.jsp");
+				request.getRequestDispatcher("register.jsp").forward(request, response);
+				return;
+			}
+			if(request.getParameter("submit") == null){
+				request.setAttribute("unAccepted", "UnAccepted condition");
+				request.getRequestDispatcher("register.jsp").forward(request, response);
+				return;
 			}
 			User user = new User(request.getParameter("firstName"),
 					request.getParameter("lastName"),
@@ -36,11 +42,11 @@ public class RegistrationsServlet extends HttpServlet {
 					request.getParameter("password"),
 					request.getParameter("gender"),
 					LocalDate.parse(request.getParameter("bday")),
-					request.getParameter("abonat").equals("1")? true: false, false, false);
+					request.getParameter("abonat") == null? false: true, false, false);
 			try {
 				UserDAO.getInstance().insertUser(user);
-				request.getSession().setAttribute("login", true);
-				request.getRequestDispatcher("mainPage.jsp").forward(request, response);
+				request.getSession().setAttribute("user", user);
+				request.getRequestDispatcher("index.jsp").forward(request, response);
 			} catch (SQLException e) {
 				request.getRequestDispatcher("errorPage.jsp").forward(request, response);
 				e.printStackTrace();

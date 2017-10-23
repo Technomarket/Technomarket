@@ -36,8 +36,8 @@ public class LoginServlet extends HttpServlet {
 			if(exist){
 				try {
 					User user = (User)UserDAO.getInstance().getUser(userName);
-					request.getSession().setAttribute("login", true);
-					request.getRequestDispatcher("mainPage.jsp").forward(request, response);
+					request.getSession().setAttribute("user", user);
+					request.getRequestDispatcher("index.jsp").forward(request, response);
 					
 				} catch (InvalidCharacteristicsDataException e) {
 					System.out.println("Invalid date for characteristics in order!");

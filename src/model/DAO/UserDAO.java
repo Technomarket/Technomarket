@@ -114,7 +114,6 @@ public class UserDAO {
 		user.setOrders(orders);
 		result.close();
 		statement.close();
-		this.connection.close();
 		return user;
 	}
 
@@ -126,7 +125,6 @@ public class UserDAO {
 		ResultSet result = statement.executeQuery();
 		boolean exist = result.next();
 		statement.close();
-		this.connection.close();
 		return exist;
 		
 	}
@@ -147,7 +145,7 @@ public class UserDAO {
 		statement.setLong(2, product.getProductId());
 		statement.executeQuery();
 		statement.close();
-		this.connection.close();
+		
 	}
 
 	// Remove favourite product:
@@ -158,7 +156,7 @@ public class UserDAO {
 		statment.setLong(2, p.getProductId());
 		statment.executeQuery();
 		statment.close();
-		this.connection.close();
+	
 	}
 
 	// Listing all favourite products:
@@ -166,8 +164,8 @@ public class UserDAO {
 		String query = "SELECT * FROM technomarket.product AS p JOIN technomarket.user_has_favourite AS f ON(p.product_id = f.product_id)WHERE f.user_id ="
 				+ user.getUserId();
 		this.connection = DBManager.getInstance().getConnections();
-		PreparedStatement statment = this.connection.prepareStatement(query);
-		ResultSet result = statment.executeQuery();
+		PreparedStatement statement = this.connection.prepareStatement(query);
+		ResultSet result = statement.executeQuery();
 		Product product = null;
 		LinkedHashSet<Product> products = new LinkedHashSet<>();
 		while (result.next()) {
@@ -182,8 +180,8 @@ public class UserDAO {
 			product.setTradeMark(ProductDAO.getInstance().getTradeMark(product.getProductId()));
 			products.add(product);
 		}
-		this.connection.close();
-		statment.close();
+		
+		statement.close();
 		return products;
 	}
 
@@ -201,7 +199,7 @@ public class UserDAO {
 			ps.setBoolean(1, isAdmin);
 			ps.setLong(2, u.getUserId());
 			ps.executeUpdate();
-			this.connection.close();
+			
 			ps.close();
 		}
 	}
@@ -218,7 +216,6 @@ public class UserDAO {
 			ps.setBoolean(1, isBanned);
 			ps.setLong(2, u.getUserId());
 			ps.executeUpdate();
-			this.connection.close();
 			ps.close();
 		}
 	}
