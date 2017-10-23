@@ -65,7 +65,6 @@ public class ProductDAO {
 			pro.setCategory(CategoryDAO.getInstance().getProductsCategory(pro.getProductId()));
 			result.close();
 			statment.close();
-			this.connection.close();
 			return pro;
 	}
 
@@ -78,7 +77,7 @@ public class ProductDAO {
 		resut.next();
 		resut.close();
 		statement.close();
-		this.connection.close();
+		
 		return resut.getString("trade_mark_name");
 	}
 
@@ -91,7 +90,7 @@ public class ProductDAO {
 		ps.setLong(2, p.getProductId());
 		ps.executeUpdate();
 		ps.close();
-		this.connection.close();
+		
 	}
 
 	// insert product module:
@@ -135,7 +134,7 @@ public class ProductDAO {
 			throw new SQLException();
 		} finally {
 			this.connection.setAutoCommit(true);
-			this.connection.close();
+			
 		}
 	}
 
@@ -156,7 +155,7 @@ public class ProductDAO {
 		rs.next();
 		rs.close();
 		ps.close();
-		this.connection.close();
+		
 		return rs.getInt("trade_mark_id");
 	}
 
@@ -208,11 +207,11 @@ public class ProductDAO {
 			throw new SQLException();
 		} finally {
 			this.connection.setAutoCommit(true);
-			this.connection.close();
+			
 		}
 
 	}
-
+//Да се оправи !
 	// Search product by name;
 	public Product searchProductByName(String productName) throws SQLException {
 		this.connection = DBManager.getInstance().getConnections();
@@ -231,7 +230,7 @@ public class ProductDAO {
 		product.setDateAdded(LocalDate.parse(result.getString(7)));
 		product.setProductNumber(result.getString(8));
 		statment.close();
-		this.connection.close();
+		
 		return product;
 	}
 
@@ -270,7 +269,7 @@ public class ProductDAO {
 		}
 		result.close();
 		statement.close();
-		this.connection.close();
+	
 		return products;
 
 	}
@@ -298,7 +297,7 @@ public class ProductDAO {
 		}
 		result.close();
 		statement.close();
-		this.connection.close();
+		
 		return products;
 	}
 
@@ -326,7 +325,7 @@ public class ProductDAO {
 		}
 		result.close();
 		statement.close();
-		this.connection.close();
+		
 		return products;
 	}
 
@@ -360,7 +359,7 @@ public class ProductDAO {
 		}
 		result.close();
 		statement.close();
-		this.connection.close();
+		
 		return products;
 	}
 
@@ -389,7 +388,7 @@ public class ProductDAO {
 		}
 		result.close();
 		statement.close();
-		this.connection.close();
+	
 		return products;
 	}
 

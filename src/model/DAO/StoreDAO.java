@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import model.Order;
 import model.Product;
@@ -32,6 +34,16 @@ public class StoreDAO {
 		}
 		return storeDAO;
 	}
+	public List<String> getAllCities() throws SQLException{
+		LinkedList<String> cityNames = new LinkedList<>();
+		this.connection = DBManager.getInstance().getConnections();
+		PreparedStatement statement = this.connection.prepareStatement("select distinct(stores.city) from technomarket.stores order by stores.city desc");
+		ResultSet result = statement.executeQuery();
+		while(result.next()){
+			cityNames.add(result.getString("stores.city"));
+		}
+		return cityNames;
+	}
 	
 	public HashSet<Store> getStoresPerCity(String city) throws SQLException, InvalidStoreDataException{
 		HashSet<Store> stores = new HashSet<>();
@@ -52,7 +64,6 @@ public class StoreDAO {
 			stores.add(s);
 		}
 		ps.close();
-		this.connection.close();
 		return stores;
 		
 	}
@@ -67,7 +78,6 @@ public class StoreDAO {
 		ps.setLong(3, p.getProductId());
 		ps.executeUpdate();
 		ps.close();
-		this.connection.close();
 	}
 
 	//returns status of product amount in specific store:
@@ -81,7 +91,7 @@ public class StoreDAO {
 		rs.next();
 		int amount = rs.getInt("amount");
 		ps.close();
-		this.connection.close();
+		
 		rs.close();
 		if(amount == 0){
 			return Status.NO_STATUS;
@@ -105,7 +115,7 @@ public class StoreDAO {
 		ps.setInt(3, amount);
 		ps.executeUpdate();
 		ps.close();
-		this.connection.close();
+		
 	}
 
 	public void insertNewStore(Store s) throws SQLException {
@@ -124,6 +134,6 @@ public class StoreDAO {
 		s.setStoreId(rs.getLong(1));
 		ps.close();
 		rs.close();
-		this.connection.close();
+		
 	}
 }
