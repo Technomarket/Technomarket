@@ -213,8 +213,9 @@ public class ProductDAO {
 	}
 //Да се оправи !
 	// Search product by name;
-	public Product searchProductByName(String productName) throws SQLException {
+	public LinkedHashSet searchProductByName(String productName) throws SQLException {
 		this.connection = DBManager.getInstance().getConnections();
+<<<<<<< HEAD
 		PreparedStatement statment = this.connection.prepareStatement(
 				"SELECT product.product_id, trade_marks.trade_mark_name, product.product_name, product.price,product.warranty, product.percent_promo, product.date_added, product.product_number FROM technomarket.product JOIN technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id)  WHERE product.product_name = ?");
 		statment.setString(1, productName);
@@ -232,6 +233,29 @@ public class ProductDAO {
 		statment.close();
 		
 		return product;
+=======
+		PreparedStatement statement = this.connection.prepareStatement(
+				"SELECT product.product_id, trade_marks.trade_mark_name, product.product_name, product.price, product.warranty, product.percent_promo, product.date_added, product.product_number, product.image_url FROM technomarket.product JOIN technomarket.trade_marks ON(product.trade_mark_id = trade_marks.trade_mark_id) WHERE product.product_name LIKE '?'");
+		statement.setString(1, productName);
+		ResultSet result = statement.executeQuery();
+		LinkedHashSet<Product> searchResult = new LinkedHashSet<>();
+		while(result.next()){
+			Product product = new Product();
+			product.setProductId(result.getLong(1));
+			product.setTradeMark(result.getString(2));
+			product.setName(result.getString(3));
+			product.setPrice(result.getString(4));
+			product.setWorranty(result.getInt(5));
+			product.setPercentPromo(result.getInt(6));
+			product.setDateAdded(LocalDate.parse(result.getString(7)));
+			product.setProductNumber(result.getString(8));
+			product.setImageUrl(result.getString(9));
+			searchResult.add(product);
+		}
+		result.close();
+		statement.close();
+		return searchResult;
+>>>>>>> 07468b38fe90741744c5d7f61a524973e5bd69fd
 	}
 
 	// Search product by category
@@ -388,7 +412,10 @@ public class ProductDAO {
 		}
 		result.close();
 		statement.close();
+<<<<<<< HEAD
 	
+=======
+>>>>>>> 07468b38fe90741744c5d7f61a524973e5bd69fd
 		return products;
 	}
 
